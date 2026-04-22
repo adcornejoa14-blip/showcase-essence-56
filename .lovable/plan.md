@@ -1,36 +1,45 @@
 
-# Foto del técnico primero, Poppins global y nombre sin fondo
+# Reducir galería de la home a 12 imágenes (con todos los retratos)
 
-## 1. Foto de la persona primero en cada perfil
+## Qué cambiar
 
-En `src/data/technicians.ts`, marcar con `isPerson: true` las 4 fotos retrato:
-- Santiago → `dos-tecnicos-lampara.jpg`
-- Raúl → `tecnico-trabajando.jpg`
-- Ricardo → `tecnico-lupa-2.jpg`
-- Luiz → `tecnico-pincel.jpg`
+La galería principal (`TalentShowcase`) muestra actualmente 17 imágenes. Reducir a **12** asegurando que **las 4 fotos de personas** estén incluidas (una por técnico) y completar con 8 piezas de trabajo, manteniendo el orden mezclado (Ecuador/Brasil intercalados, sin dos consecutivas del mismo técnico).
 
-En `getTechnicianBySlug`, ordenar el array `images` poniendo primero las marcadas `isPerson` y después el resto en su orden actual. La galería de la home **no cambia** — solo el perfil individual.
+## Selección (12 imágenes)
 
-## 2. Tipografía Poppins en todo el sitio
+Las 4 fotos retrato (obligatorias):
+- `dos-tecnicos-lampara` (Santiago)
+- `tecnico-trabajando` (Raúl)
+- `tecnico-lupa-2` (Ricardo)
+- `tecnico-pincel` (Luiz)
 
-- `index.html`: añadir `<link>` a Google Fonts (Poppins, pesos 300/400/500/600/700) con `preconnect` a `fonts.googleapis.com` y `fonts.gstatic.com`.
-- `tailwind.config.ts`: extender `theme.fontFamily.sans` con Poppins primero + fallback system stack. Todo el sitio hereda Poppins automáticamente.
+8 piezas de trabajo (2 por técnico para equilibrio):
+- Santiago: `arcada-cera`, `coronas-centrales`
+- Raúl: `cad-arcada-amarillo`, `wax-up-detalle`
+- Ricardo: `ceramica-rosa`, `arcada-superior`
+- Luiz: `cad-arcada-pilar`, `arcada-brillante`
 
-## 3. Quitar fondo a la etiqueta del nombre
+Orden propuesto (intercalando autores y países, sin repetir técnico consecutivo):
 
-En `src/components/GalleryItem.tsx`:
-- Eliminar `bg-foreground/55`, `backdrop-blur-sm`, padding y `rounded` de la cápsula del nombre.
-- Dejar solo el texto blanco con Poppins fina.
-- Añadir `text-shadow` sutil (`[text-shadow:_0_1px_3px_rgb(0_0_0_/_0.7)]`) para legibilidad sobre imágenes claras.
-- Mantener el degradado inferior suave en móvil (ya existente) como apoyo de contraste.
+1. `arcada-cera` — Santiago
+2. `cad-arcada-pilar` — Luiz
+3. `tecnico-lupa-2` — Ricardo (persona)
+4. `cad-arcada-amarillo` — Raúl
+5. `dos-tecnicos-lampara` — Santiago (persona)
+6. `ceramica-rosa` — Ricardo
+7. `wax-up-detalle` — Raúl
+8. `tecnico-pincel` — Luiz (persona)
+9. `coronas-centrales` — Santiago
+10. `arcada-superior` — Ricardo
+11. `tecnico-trabajando` — Raúl (persona)
+12. `arcada-brillante` — Luiz
 
-## Archivos afectados
+Resultado en grid: 4 columnas × 3 filas en desktop, 2 columnas × 6 filas en móvil — rejilla perfectamente cuadrada y completa, sin huecos.
 
-- `src/data/technicians.ts` — flag `isPerson` + reordenado en helper.
-- `index.html` — link a Poppins.
-- `tailwind.config.ts` — `fontFamily.sans` con Poppins.
-- `src/components/GalleryItem.tsx` — etiqueta sin fondo, solo texto con sombra.
+## Archivo afectado
+
+- `src/data/technicians.ts` — recortar el array `technicians` a estas 12 entradas en el orden indicado. Las imágenes eliminadas del array siguen importadas/usadas por `getTechnicianBySlug`, así que los **perfiles individuales no pierden contenido** — solo cambia lo que se ve en la home.
 
 ## Resultado
 
-Al abrir el portafolio de un técnico, su retrato aparece primero. Toda la web usa Poppins. El nombre del técnico flota directamente sobre la imagen, sin caja, manteniendo el look minimalista.
+Home más curada: 12 piezas, los 4 retratos presentes y repartidos, rejilla limpia. Los portafolios individuales mantienen todas las fotos de cada técnico.
