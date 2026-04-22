@@ -57,18 +57,16 @@ const GalleryItem = ({ tech, index, showLabel = true }: Props) => {
           <div className="pointer-events-none absolute inset-0 hidden bg-foreground/0 transition-colors duration-300 ease-out group-hover:bg-foreground/10 md:block" />
 
           {/* Etiqueta — siempre visible en móvil (solo nombre), hover en desktop (nombre + especialidad + ciudad) */}
-          <div className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] md:translate-y-1 md:opacity-0 md:transition-all md:duration-300 md:ease-out md:group-hover:translate-y-0 md:group-hover:opacity-100">
-            <div className="rounded-sm bg-foreground/55 px-2.5 py-1 backdrop-blur-sm">
-              <p className="text-[11px] font-medium leading-tight tracking-wide text-background md:text-xs">
-                {tech.name}
-              </p>
-              <p className="mt-0.5 hidden text-[11px] font-light leading-tight text-background/85 md:block">
-                {tech.specialty}
-              </p>
-              <p className="hidden text-[10px] font-light leading-tight tracking-wide text-background/65 md:block">
-                {tech.city}
-              </p>
-            </div>
+          <div className="absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)] md:translate-y-1 md:opacity-0 md:transition-all md:duration-300 md:ease-out md:group-hover:translate-y-0 md:group-hover:opacity-100">
+            <p className="text-[11px] font-medium leading-tight tracking-wide text-background md:text-xs [text-shadow:_0_1px_3px_rgb(0_0_0_/_0.7)]">
+              {tech.name}
+            </p>
+            <p className="mt-0.5 hidden text-[11px] font-light leading-tight text-background/90 md:block [text-shadow:_0_1px_3px_rgb(0_0_0_/_0.7)]">
+              {tech.specialty}
+            </p>
+            <p className="hidden text-[10px] font-light leading-tight tracking-wide text-background/75 md:block [text-shadow:_0_1px_3px_rgb(0_0_0_/_0.7)]">
+              {tech.city}
+            </p>
           </div>
         </>
       )}
