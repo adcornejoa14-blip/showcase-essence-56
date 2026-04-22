@@ -1,3 +1,13 @@
+import cadImplante from "@/assets/gallery/cad-implante.jpg";
+import tecnicoPinzas from "@/assets/gallery/tecnico-pinzas.jpg";
+import ceramicaMacro from "@/assets/gallery/ceramica-macro.jpg";
+import scanSuperior from "@/assets/gallery/scan-superior.png";
+import dosTecnicos from "@/assets/gallery/dos-tecnicos.jpg";
+import waxUpFirma from "@/assets/gallery/wax-up-firma.jpg";
+import tecnicoLupa from "@/assets/gallery/tecnico-lupa.jpg";
+import pilarImplante from "@/assets/gallery/pilar-implante.jpg";
+import arcadaPulida from "@/assets/gallery/arcada-pulida.jpg";
+
 export type Technician = {
   image: string;
   name: string;
@@ -5,66 +15,60 @@ export type Technician = {
   city: string;
 };
 
-// Placeholders neutros (Unsplash). Sustituir por imágenes reales cuando estén listas.
+// Orden mezclado a propósito: render → foto → macro → escaneo → foto…
 export const technicians: Technician[] = [
   {
-    image: "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=800&q=80",
-    name: "Ana López",
-    specialty: "Experta en Carillas",
-    city: "Madrid",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&q=80",
+    image: cadImplante,
     name: "Carlos Ruiz",
     specialty: "Diseño CAD/CAM",
     city: "Barcelona",
   },
   {
-    image: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&q=80",
-    name: "María Fernández",
-    specialty: "Implantología",
-    city: "Valencia",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=800&q=80",
+    image: tecnicoPinzas,
     name: "Javier Soto",
-    specialty: "Prótesis Removibles",
+    specialty: "Estratificación Cerámica",
     city: "Sevilla",
   },
   {
-    image: "https://images.unsplash.com/photo-1581585504900-0b71b3c1b1f6?w=800&q=80",
+    image: ceramicaMacro,
     name: "Laura Vidal",
     specialty: "Estética Dental",
     city: "Bilbao",
   },
   {
-    image: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=800&q=80",
-    name: "Pablo Moreno",
-    specialty: "Ortodoncia Invisible",
-    city: "Zaragoza",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?w=800&q=80",
-    name: "Sara Gómez",
-    specialty: "Coronas Zirconio",
-    city: "Málaga",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1588776813677-77aaf5595b83?w=800&q=80",
-    name: "Diego Navarro",
-    specialty: "Renders 3D",
-    city: "Granada",
-  },
-  {
-    image: "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=800&q=80",
+    image: scanSuperior,
     name: "Lucía Castro",
     specialty: "Escaneado Intraoral",
     city: "Valladolid",
   },
   {
-    image: "https://images.unsplash.com/photo-1571772996211-2f02c9727629?w=800&q=80",
-    name: "Hugo Martín",
-    specialty: "Maxilofacial",
-    city: "Murcia",
+    image: dosTecnicos,
+    name: "Ana López & Hugo Martín",
+    specialty: "Trabajo en Equipo",
+    city: "Madrid",
+  },
+  {
+    image: waxUpFirma,
+    name: "María Fernández",
+    specialty: "Wax-Up Diagnóstico",
+    city: "Valencia",
+  },
+  {
+    image: tecnicoLupa,
+    name: "Pablo Moreno",
+    specialty: "Caracterización Bajo Lupa",
+    city: "Zaragoza",
+  },
+  {
+    image: pilarImplante,
+    name: "Diego Navarro",
+    specialty: "Pilares sobre Implante",
+    city: "Granada",
+  },
+  {
+    image: arcadaPulida,
+    name: "Sara Gómez",
+    specialty: "Coronas Zirconio",
+    city: "Málaga",
   },
 ];
