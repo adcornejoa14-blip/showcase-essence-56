@@ -44,21 +44,16 @@ const LUIZ: TechnicianInfo = { slug: "luiz-varelas", name: "Luiz Varelas", speci
 export const technicians: Technician[] = [
   { image: arcadaCera, ...SANTIAGO },
   { image: cadArcadaPilar, ...LUIZ },
-  { image: cadArcadaAmarillo, ...RAUL },
   { image: tecnicoLupa2, ...RICARDO, isPerson: true },
+  { image: cadArcadaAmarillo, ...RAUL },
   { image: dosTecnicosLampara, ...SANTIAGO, isPerson: true },
-  { image: waxUpLineas, ...LUIZ },
-  { image: waxUpDetalle, ...RAUL },
   { image: ceramicaRosa, ...RICARDO },
-  { image: coronasCentrales, ...SANTIAGO },
+  { image: waxUpDetalle, ...RAUL },
   { image: tecnicoPincel, ...LUIZ, isPerson: true },
-  { image: tecnicoTrabajando, ...RAUL, isPerson: true },
-  { image: coronasOpalescencia, ...RICARDO },
-  { image: arcadaBrillante, ...LUIZ },
+  { image: coronasCentrales, ...SANTIAGO },
   { image: arcadaSuperior, ...RICARDO },
-  { image: arcadaRender, ...RAUL },
-  { image: coronaPilar, ...RICARDO },
-  { image: coronasOpal, ...LUIZ },
+  { image: tecnicoTrabajando, ...RAUL, isPerson: true },
+  { image: arcadaBrillante, ...LUIZ },
 ];
 
 export type TechnicianProfile = TechnicianInfo & {
