@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import Hero from "@/components/Hero";
 import TalentShowcase from "@/components/TalentShowcase";
 
 const Index = () => {
@@ -6,7 +7,8 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        <h1 className="sr-only">Talent Showcase — Técnicos dentales</h1>
+        <h1 className="sr-only">NOMA Digital Studio — Talent Showcase</h1>
+        <Hero />
         <TalentShowcase />
       </main>
     </div>
