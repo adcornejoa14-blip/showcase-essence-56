@@ -1,42 +1,65 @@
 
-# Alinear todas las imágenes para que terminen al mismo nivel inferior
+# Perfil individual de cada técnico al hacer clic en una imagen
 
-## Problema
+## Qué construir
 
-Ahora la galería usa CSS `columns` (masonry vertical). Cada columna tiene altura distinta porque las imágenes apilan diferente, así que el borde inferior de la galería queda dentado: una columna acaba más abajo que otra.
+Al hacer clic (o tap) sobre cualquier imagen de la galería, navegar a una página dedicada del técnico autor de esa pieza, mostrando todo su portafolio personal con bio breve, ciudad y rejilla con sus trabajos.
 
-## Solución
+## Estructura
 
-Cambiar de `columns` a **CSS Grid con filas iguales y `object-cover`**, para que todas las imágenes:
-- Compartan la misma altura por fila.
-- La galería termine en una línea recta abajo.
-- Se mantenga la estética compacta sin huecos.
+### Datos (`src/data/technicians.ts`)
+- Añadir un identificador `slug` por técnico: `santiago-guerra`, `raul-guerra`, `ricardo-malise`, `luiz-varelas`.
+- Crear una estructura paralela `techniciansBySlug` (o derivarla) con la info del técnico + array de sus imágenes.
+- Mantener el array actual `technicians` (la galería principal mezclada) pero cada item lleva ahora también el `slug` de su autor para saber a dónde navegar.
 
-## Cambios en `src/components/TalentShowcase.tsx`
+### Nueva ruta `/tecnico/:slug`
+- Crear `src/pages/TechnicianProfile.tsx`.
+- Registrar la ruta en `src/App.tsx` antes de la catch-all `*`:
+  ```
+  <Route path="/tecnico/:slug" element={<TechnicianProfile />} />
+  ```
+- La página lee el `slug` con `useParams`, busca al técnico; si no existe → `<Navigate to="/" />`.
 
-Reemplazar el contenedor:
+### Diseño de la página de perfil
+Estética coherente con la home (minimalista, tipografía fina ya existente):
 
-```tsx
-<div className="columns-2 gap-1 md:columns-3 md:gap-1 lg:columns-4">
+```text
+┌─────────────────────────────────────────┐
+│  ← Volver                               │
+│                                         │
+│  Santiago Guerra                        │
+│  Técnico Dental · Guayaquil, Ecuador    │
+│                                         │
+│  [grid 2/3/4 columnas con sus piezas]   │
+└─────────────────────────────────────────┘
 ```
 
-Por una grid uniforme:
+- Header simple: enlace "← Volver" (usa `Link` de react-router) arriba a la izquierda.
+- Bloque de identidad: nombre grande (mantener fuente actual del Hero), debajo línea fina con especialidad + ciudad.
+- Galería: misma `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1` con celdas `aspect-square` y `object-cover` que ya usa `TalentShowcase` — se reutilizará el mismo `GalleryItem` exportándolo desde `TalentShowcase.tsx` (o extrayéndolo a `src/components/GalleryItem.tsx` para compartirlo limpio entre los dos contextos).
+- En la página de perfil las celdas **no** son clicables (ya estás dentro del perfil).
 
-```tsx
-<div className="grid grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-4">
-```
+### Cambio en `TalentShowcase.tsx`
+- Envolver cada `GalleryItem` en un `<Link to={`/tecnico/${tech.slug}`}>` para que toda la celda sea clicable.
+- Añadir cursor pointer y un sutil scale/opacidad en hover desktop como affordance de "es interactivo" (manteniendo la estética actual, sin exagerar).
+- Accesibilidad: el link lleva `aria-label="Ver portafolio de {nombre}"`.
 
-Y en `GalleryItem`:
-- Quitar `break-inside-avoid` y `mb-1` (ya no aplica con grid).
-- Envolver la imagen en un contenedor con `aspect-square` (proporción 1:1, todas las celdas idénticas).
-- La imagen pasa a `h-full w-full object-cover` para rellenar la celda recortando lo que sobre.
+### Comportamiento al navegar
+- `useEffect` en `TechnicianProfile` que hace `window.scrollTo(0, 0)` al montar / cambiar slug, para que el perfil empiece arriba.
+- Title del documento se actualiza a `{Nombre} — Portafolio` para SEO básico.
 
-Resultado: rejilla perfecta, todas las filas alineadas, borde inferior recto. La etiqueta de hover y el degradado móvil se mantienen igual.
+## Archivos afectados
 
-## Alternativa que descarto
+**Editado:** `src/data/technicians.ts` — añadir `slug` a cada constante de técnico (`SANTIAGO`, `RAUL`, `RICARDO`, `LUIZ`); exportar helper `getTechnicianBySlug(slug)` que devuelve `{ name, specialty, city, images: string[] }`.
 
-Mantener masonry y forzar igualar columnas con JS sería frágil y reordenaría imágenes. La grid cuadrada es más predecible y profesional para un portfolio.
+**Nuevo:** `src/components/GalleryItem.tsx` — extraer el componente `GalleryItem` actual de `TalentShowcase.tsx` para reutilizarlo, con prop opcional `linkable` (default true en la home, false en perfil).
 
-## Archivo afectado
+**Editado:** `src/components/TalentShowcase.tsx` — importar `GalleryItem` desde el nuevo archivo, envolver en `<Link>`.
 
-- `src/components/TalentShowcase.tsx` — cambiar contenedor a grid + envolver cada imagen en celda `aspect-square` con `object-cover`.
+**Nuevo:** `src/pages/TechnicianProfile.tsx` — página de perfil con header, bio y galería del técnico.
+
+**Editado:** `src/App.tsx` — registrar ruta `/tecnico/:slug` antes del catch-all.
+
+## Resultado
+
+Cada imagen de la home se vuelve un acceso al portafolio personal del técnico. Navegación limpia, URL compartible (`/tecnico/ricardo-malise`), estética idéntica al resto del sitio.
