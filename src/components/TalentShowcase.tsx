@@ -24,7 +24,7 @@ const GalleryItem = ({ tech, index }: { tech: Technician; index: number }) => {
   return (
     <div
       ref={ref}
-      className={`group relative mb-1 break-inside-avoid overflow-hidden transition-all duration-700 ease-out md:mb-1 ${
+      className={`group relative aspect-square overflow-hidden transition-all duration-700 ease-out ${
         visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
       }`}
       style={{ transitionDelay: `${(index % 8) * 60}ms` }}
@@ -33,7 +33,7 @@ const GalleryItem = ({ tech, index }: { tech: Technician; index: number }) => {
         src={tech.image}
         alt={`${tech.name} — ${tech.specialty}`}
         loading="lazy"
-        className="block w-full h-auto"
+        className="block h-full w-full object-cover"
       />
 
       {/* Degradado inferior solo en móvil para legibilidad del nombre */}
@@ -66,7 +66,7 @@ const TalentShowcase = () => {
       <div className="py-4 md:py-6" />
 
       <div className="px-2 md:px-1">
-        <div className="columns-2 gap-1 md:columns-3 md:gap-1 lg:columns-4">
+        <div className="grid grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-4">
           {technicians.map((tech, i) => (
             <GalleryItem key={`${tech.name}-${i}`} tech={tech} index={i} />
           ))}
