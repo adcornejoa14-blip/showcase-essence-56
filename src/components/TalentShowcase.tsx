@@ -73,11 +73,8 @@ const GalleryItem = ({ tech, index }: { tech: Technician; index: number }) => {
 const TalentShowcase = () => {
   return (
     <section aria-label="Talent Showcase" className="w-full">
-      <div className="py-8 md:py-12">
-        <p className="text-center text-[10px] font-light uppercase tracking-[0.35em] text-foreground/40">
-          Talent Showcase
-        </p>
-      </div>
+      <div className="py-4 md:py-6" />
+
 
       <div className="px-2 md:px-1">
         <div className="columns-2 gap-1 md:columns-3 md:gap-1 lg:columns-4">

@@ -28,12 +28,7 @@ const Header = () => {
           </button>
         </div>
 
-        <div className="justify-self-center">
-          {/* Logo placeholder — sustituir por archivo real cuando esté disponible */}
-          <span className="select-none text-[15px] font-light tracking-[0.35em] text-foreground/90">
-            LOGO
-          </span>
-        </div>
+        <div className="justify-self-center" aria-hidden="true" />
 
         <div className="justify-self-end">
           <a
