@@ -32,6 +32,7 @@ export type TechnicianInfo = {
 
 export type Technician = TechnicianInfo & {
   image: string;
+  isPerson?: boolean;
 };
 
 const SANTIAGO: TechnicianInfo = { slug: "santiago-guerra", name: "Santiago Guerra", specialty: "Técnico Dental", city: "Guayaquil, Ecuador" };
@@ -44,14 +45,14 @@ export const technicians: Technician[] = [
   { image: arcadaCera, ...SANTIAGO },
   { image: cadArcadaPilar, ...LUIZ },
   { image: cadArcadaAmarillo, ...RAUL },
-  { image: tecnicoLupa2, ...RICARDO },
-  { image: dosTecnicosLampara, ...SANTIAGO },
+  { image: tecnicoLupa2, ...RICARDO, isPerson: true },
+  { image: dosTecnicosLampara, ...SANTIAGO, isPerson: true },
   { image: waxUpLineas, ...LUIZ },
   { image: waxUpDetalle, ...RAUL },
   { image: ceramicaRosa, ...RICARDO },
   { image: coronasCentrales, ...SANTIAGO },
-  { image: tecnicoPincel, ...LUIZ },
-  { image: tecnicoTrabajando, ...RAUL },
+  { image: tecnicoPincel, ...LUIZ, isPerson: true },
+  { image: tecnicoTrabajando, ...RAUL, isPerson: true },
   { image: coronasOpalescencia, ...RICARDO },
   { image: arcadaBrillante, ...LUIZ },
   { image: arcadaSuperior, ...RICARDO },
@@ -69,6 +70,9 @@ const ALL_TECHNICIANS: TechnicianInfo[] = [SANTIAGO, RAUL, RICARDO, LUIZ];
 export const getTechnicianBySlug = (slug: string): TechnicianProfile | undefined => {
   const info = ALL_TECHNICIANS.find((t) => t.slug === slug);
   if (!info) return undefined;
-  const images = technicians.filter((t) => t.slug === slug).map((t) => t.image);
+  const items = technicians.filter((t) => t.slug === slug);
+  const persons = items.filter((t) => t.isPerson);
+  const rest = items.filter((t) => !t.isPerson);
+  const images = [...persons, ...rest].map((t) => t.image);
   return { ...info, images };
 };
