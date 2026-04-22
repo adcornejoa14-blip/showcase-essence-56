@@ -23,17 +23,21 @@ import tecnicoPincel from "@/assets/gallery/tecnico-pincel.jpg";
 import arcadaBrillante from "@/assets/gallery/arcada-brillante.jpg";
 import coronasOpal from "@/assets/gallery/coronas-opal.jpg";
 
-export type Technician = {
-  image: string;
+export type TechnicianInfo = {
+  slug: string;
   name: string;
   specialty: string;
   city: string;
 };
 
-const SANTIAGO = { name: "Santiago Guerra", specialty: "Técnico Dental", city: "Guayaquil, Ecuador" };
-const RAUL = { name: "Raúl Guerra", specialty: "Técnico Dental", city: "Guayaquil, Ecuador" };
-const RICARDO = { name: "Ricardo Malise", specialty: "Técnico Dental", city: "Praia Brava, Brasil" };
-const LUIZ = { name: "Luiz Varelas", specialty: "Técnico Dental", city: "Praia Brava, Brasil" };
+export type Technician = TechnicianInfo & {
+  image: string;
+};
+
+const SANTIAGO: TechnicianInfo = { slug: "santiago-guerra", name: "Santiago Guerra", specialty: "Técnico Dental", city: "Guayaquil, Ecuador" };
+const RAUL: TechnicianInfo = { slug: "raul-guerra", name: "Raúl Guerra", specialty: "Técnico Dental", city: "Guayaquil, Ecuador" };
+const RICARDO: TechnicianInfo = { slug: "ricardo-malise", name: "Ricardo Malise", specialty: "Técnico Dental", city: "Praia Brava, Brasil" };
+const LUIZ: TechnicianInfo = { slug: "luiz-varelas", name: "Luiz Varelas", specialty: "Técnico Dental", city: "Praia Brava, Brasil" };
 
 // Orden mezclado: Ecuador y Brasil intercalados, sin piezas del mismo técnico consecutivas.
 export const technicians: Technician[] = [
@@ -55,3 +59,16 @@ export const technicians: Technician[] = [
   { image: coronaPilar, ...RICARDO },
   { image: coronasOpal, ...LUIZ },
 ];
+
+export type TechnicianProfile = TechnicianInfo & {
+  images: string[];
+};
+
+const ALL_TECHNICIANS: TechnicianInfo[] = [SANTIAGO, RAUL, RICARDO, LUIZ];
+
+export const getTechnicianBySlug = (slug: string): TechnicianProfile | undefined => {
+  const info = ALL_TECHNICIANS.find((t) => t.slug === slug);
+  if (!info) return undefined;
+  const images = technicians.filter((t) => t.slug === slug).map((t) => t.image);
+  return { ...info, images };
+};
