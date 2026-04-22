@@ -1,35 +1,36 @@
 
-# Logo "NOMA DIGITAL STUDIO" como hero principal
+# Reemplazar imágenes de la galería con tus fotos reales
 
-## Qué cambia
-El logo pasa de ser un pequeño elemento en el header a ser el protagonista absoluto de la primera pantalla, ocupando el ancho visual de la zona superior antes de la galería.
+## Qué se hace
+Sustituyo los 10 placeholders de Unsplash por las 9 fotos que acabas de subir, mostradas en **orden aleatorio** (mezcladas, no en el orden en que las subiste) para que la galería tenga un ritmo visual más natural — render CAD junto a foto de taller junto a macro de cerámica, etc.
 
-## Estructura nueva de la primera pantalla
+## Pasos concretos
 
-**1. Header ultra-minimal (reducido)**
-- Se mantiene sticky translúcido al hacer scroll.
-- Se queda solo el ícono de menú hamburguesa (izquierda) y "Acceder" (derecha).
-- Se elimina el "LOGO" placeholder del centro — el logo ya no vive en el header, vive en el hero debajo.
+**1. Copiar las imágenes al proyecto**
+Las 9 imágenes pasan de `user-uploads://` a `src/assets/gallery/`:
+- `Screenshot_2026-04-22_at_4.22.01_PM.png` → `scan-superior.png`
+- `IMG_0998.jpg` → `ceramica-macro.jpg`
+- `IMG_0999.jpg` → `wax-up-firma.jpg`
+- `IMG_1003.jpg` → `cad-implante.jpg`
+- `IMG_1004.jpg` → `pilar-implante.jpg`
+- `IMG_1005.jpg` → `tecnico-pinzas.jpg`
+- `IMG_1006.jpg` → `dos-tecnicos.jpg`
+- `IMG_1007.jpg` → `arcada-pulida.jpg`
+- `IMG_1010.jpg` → `tecnico-lupa.jpg`
 
-**2. Hero con logo a gran formato (nuevo)**
-- Sección dedicada justo debajo del header, con fondo blanco y mucho aire (padding vertical generoso).
-- Logo `NOMA DIGITAL STUDIO.` centrado, ocupando un ancho amplio:
-  - Desktop: ~70% del ancho de pantalla (max ~900px)
-  - Tablet: ~85%
-  - Móvil: ~90% con margen lateral mínimo
-- Imagen del logo importada desde `src/assets/` para que Vite la optimice.
-- Sin texto adicional, sin tagline, sin botones — fiel al minimalismo aprobado.
-- Fade-in suave al cargar la página.
+**2. Reescribir `src/data/technicians.ts`**
+- Importar las 9 imágenes como módulos ES6 (`import x from "@/assets/gallery/..."`) para que Vite las optimice.
+- Mantener la estructura `{ image, name, specialty, city }` para que el componente `TalentShowcase` siga funcionando sin cambios.
+- Asignar nombre/especialidad/ciudad coherentes con lo que muestra cada imagen:
+  - Fotos de personas trabajando → técnicos reales (con nombre + ciudad)
+  - Renders CAD / macros de cerámica / escaneos → atribuidos como "trabajo de" un técnico con su especialidad concreta (Diseño CAD/CAM, Estética Dental, Coronas Zirconio, Implantología, etc.)
+- **Orden desordenado a propósito**: la secuencia en el array mezcla tipos (render → foto humana → macro → escaneo → render…) para romper monotonía visual en el masonry.
 
-**3. Galería Talent Showcase**
-- Se mantiene exactamente igual debajo del hero del logo.
-- Se elimina la etiqueta "TALENT SHOWCASE" pequeña (ahora redundante visualmente con un logo tan presente arriba), o se reduce aún más — lo decido por el equilibrio visual.
+**3. Sin tocar componentes**
+`TalentShowcase.tsx` y `Hero.tsx` no se modifican — solo cambia la fuente de datos.
 
-## Archivos afectados
-- **Nuevo:** `src/assets/noma-logo.png` — copia del logo subido.
-- **Nuevo:** `src/components/Hero.tsx` — sección hero con el logo grande.
-- **Editado:** `src/components/Header.tsx` — quitar el placeholder "LOGO" del centro.
-- **Editado:** `src/pages/Index.tsx` — insertar `<Hero />` entre `<Header />` y `<TalentShowcase />`.
+## Resultado
+Galería masonry con tus 9 piezas reales, mezcladas, cada una con su tarjeta de hover (nombre + especialidad + ciudad). Si más adelante quieres ajustar nombres reales de técnicos o reordenar manualmente, se hace editando solo `technicians.ts`.
 
-## Pendiente de tu parte
-Nada — con el PNG que ya subiste es suficiente para integrarlo. Si más adelante tienes una versión SVG, la sustituimos para máxima nitidez.
+## Pendiente de tu parte (opcional)
+Si quieres que algún nombre/especialidad/ciudad concretos vayan asociados a una imagen específica (porque conoces al autor real de cada pieza), pásamelo y lo ajusto. Si no, uso atribuciones plausibles para el portfolio inicial.
