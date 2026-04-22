@@ -1,64 +1,71 @@
 
-# Portfolio final: 4 técnicos con nombre, especialidad y ciudad visibles
+# Asignar fotos correctas a cada técnico + nombre solo en hover
 
-## Los 4 técnicos confirmados (datos reales)
+## Lo que entiendo
 
-1. **Santiago Guerra** — Técnico Dental · Guayaquil, Ecuador
-2. **Raúl Guerra** — Técnico Dental · Guayaquil, Ecuador
-3. **Ricardo Malise** — Técnico Dental · Praia Brava, Brasil
-4. **Luiz Varelas** — Técnico Dental · Praia Brava, Brasil
+Dos correcciones al estado actual:
 
-Mantengo el campo `city` en el tipo `Technician` (lo había propuesto quitar — ahora se queda porque añade contexto real al portfolio internacional Ecuador/Brasil).
+1. **Asignación de fotos por técnico está mal**: Las imágenes que subiste estaban agrupadas por técnico (cada tanda de uploads pertenecía al técnico que mencionaste justo antes), pero las repartí mezclando autores. Hay que reasignar según el orden real de envío.
 
-## Reparto de las 12 piezas (3 por técnico)
+2. **El nombre debe aparecer solo en hover**, no permanente. Recuperar el comportamiento anterior: imagen limpia por defecto, etiqueta con nombre + especialidad + ciudad aparece al pasar el ratón. Mantener la tipografía fina actual.
 
-**Santiago Guerra** (Guayaquil, Ecuador)
-- cad-implante.jpg
-- scan-superior.png
-- cad-arcada-pilar.jpg (IMG_1003_2 — nueva)
+## Asignación correcta según el orden en que enviaste las fotos
 
-**Raúl Guerra** (Guayaquil, Ecuador)
-- ceramica-macro.jpg
-- wax-up-firma.jpg
-- wax-up-lineas.jpg (IMG_0999_2 — nueva)
+**Santiago Guerra Goes** (Técnico Dental, Guayaquil, Ecuador) — primer nombre que diste, le corresponden las 3 fotos subidas en ese mensaje:
+- `arcada-cera` (Screenshot_37.png — escaneo arcada con cera)
+- `dos-tecnicos-lampara` (IMG_1006-2.jpg — dos técnicos bajo lámpara)
+- `coronas-centrales` (Screenshot_2026-04-22_at_4.24.19_PM.png — render dos coronas)
 
-**Ricardo Malise** (Praia Brava, Brasil)
-- pilar-implante.jpg
-- tecnico-lupa.jpg
-- coronas-opal.jpg (IMG_1017 — nueva)
+**Raúl Guerra Goes** (Técnico Dental, Guayaquil, Ecuador) — segundo nombre, 4 fotos:
+- `cad-arcada-amarillo` (IMG_1005-2.jpg)
+- `wax-up-detalle` (IMG_1004-2.jpg)
+- `tecnico-trabajando` (IMG_1007-2.jpg)
+- `arcada-render` (Screenshot_2026-04-22_at_4.22.01_PM-2.png)
 
-**Luiz Varelas** (Praia Brava, Brasil)
-- arcada-pulida.jpg
-- arcada-brillante.jpg (IMG_1018 — nueva)
-- tecnico-pincel.jpg (IMG_1019 — nueva)
+**Ricardo Malise** (Técnico Dental, Praia Brava, Brasil) — tercer nombre, 5 fotos:
+- `tecnico-lupa-2` (IMG_1010_2.jpg)
+- `ceramica-rosa` (IMG_1011.jpg)
+- `coronas-opalescencia` (IMG_1012.jpg)
+- `arcada-superior` (IMG_1013.jpg)
+- `corona-pilar` (IMG_1014.jpg)
 
-Orden mezclado en el masonry para que las piezas del mismo técnico no aparezcan consecutivas (Ecuador y Brasil intercalados).
+**Luiz Varelas** (Técnico Dental, Praia Brava, Brasil) — cuarto nombre, 5 fotos:
+- `cad-arcada-pilar` (IMG_1003_2.jpg — ya en proyecto)
+- `wax-up-lineas` (IMG_0999_2.jpg — ya en proyecto, hay que renombrar autoría)
+- `tecnico-pincel` (IMG_1019.jpg — ya en proyecto)
+- `arcada-brillante` (IMG_1018.jpg — ya en proyecto)
+- `coronas-opal` (IMG_1017.jpg — ya en proyecto)
 
-Las imágenes que no entran en esta selección final (`tecnico-pinzas.jpg`, `dos-tecnicos.jpg` y los uploads no usados) quedan sin referenciar — los archivos siguen en `src/assets/gallery/` por si los quieres rescatar luego, pero no aparecen en la galería.
+**Total: 17 piezas** (todas las que enviaste, ninguna descartada).
 
-## Etiqueta visible permanente en cada imagen
+Las fotos antiguas de Unsplash que aún figuran en `technicians.ts` (`cad-implante`, `scan-superior`, `ceramica-macro`, `wax-up-firma`, `pilar-implante`, `tecnico-lupa`, `arcada-pulida`) **se eliminan de la galería** porque no son trabajo real de los técnicos — el portfolio queda 100% con tus fotos.
 
-Modifico `src/components/TalentShowcase.tsx`:
+## Orden mezclado en el masonry
 
-- Etiqueta fija en `bottom-2 left-2` con **nombre del técnico** siempre visible.
-- Fondo `bg-foreground/55` + `backdrop-blur-sm`, `rounded-sm`, padding `px-2.5 py-1`.
-- Tipografía blanca fina, `text-[11px]` móvil / `text-xs` desktop, `tracking-wide`.
-- En **hover desktop**: la etiqueta se expande con animación suave mostrando especialidad ("Técnico Dental") y ciudad ("Guayaquil, Ecuador" / "Praia Brava, Brasil") debajo del nombre.
-- En **móvil**: solo nombre visible permanente — sin degradado oscuro grande (se elimina el actual para una estética más limpia).
+17 piezas intercaladas para que no aparezcan dos del mismo técnico seguidas, alternando además Ecuador y Brasil:
+
+Santiago → Luiz → Raúl → Ricardo → Santiago → Luiz → Raúl → Ricardo → Santiago → Luiz → Raúl → Ricardo → Luiz → Ricardo → Raúl → Ricardo → Luiz
+
+## Cambio en `TalentShowcase.tsx`: nombre solo en hover
+
+Volver al comportamiento anterior:
+- **Por defecto**: imagen limpia, sin etiqueta visible.
+- **Hover desktop**: aparece la etiqueta con `bg-foreground/55` + `backdrop-blur-sm` en `bottom-2 left-2`, mostrando **nombre + especialidad + ciudad** con la misma tipografía fina actual (`text-[11px]`/`text-xs`, `tracking-wide`, white).
+- **Móvil (sin hover real)**: la etiqueta aparece con un degradado suave inferior — solo nombre, ya que en táctil no hay hover. Animación de entrada al hacer scroll igual que ahora.
+
+Tipografía y colores idénticos a los que ya tenías antes del cambio permanente — no se introduce ninguna fuente nueva.
 
 ## Archivos afectados
 
-**Nuevos assets a copiar a `src/assets/gallery/`:**
-- `cad-arcada-pilar.jpg` (de IMG_1003_2.jpg)
-- `wax-up-lineas.jpg` (de IMG_0999_2.jpg)
-- `coronas-opal.jpg` (de IMG_1017.jpg)
-- `arcada-brillante.jpg` (de IMG_1018.jpg)
-- `tecnico-pincel.jpg` (de IMG_1019.jpg)
+**Nuevos assets a copiar a `src/assets/gallery/`** (8 imágenes pendientes de los uploads anteriores):
+- `arcada-cera.png`, `dos-tecnicos-lampara.jpg`, `coronas-centrales.png` (Santiago)
+- `cad-arcada-amarillo.jpg`, `wax-up-detalle.jpg`, `tecnico-trabajando.jpg`, `arcada-render.png` (Raúl)
+- `tecnico-lupa-2.jpg`, `ceramica-rosa.jpg`, `coronas-opalescencia.jpg`, `arcada-superior.jpg`, `corona-pilar.jpg` (Ricardo)
 
-**Editado:** `src/data/technicians.ts` — 12 entradas con solo 4 nombres únicos (Santiago Guerra, Raúl Guerra, Ricardo Malise, Luiz Varelas), todos con `specialty: "Técnico Dental"` y su ciudad real, en orden mezclado.
+**Editado:** `src/data/technicians.ts` — 17 entradas con autoría correcta según orden de envío, mezcladas.
 
-**Editado:** `src/components/TalentShowcase.tsx` — etiqueta permanente con nombre, expansión a especialidad + ciudad en hover desktop, sin degradado oscuro en móvil.
+**Editado:** `src/components/TalentShowcase.tsx` — etiqueta vuelve a aparecer solo en hover (desktop) o con degradado suave (móvil), tipografía fina anterior.
 
 ## Resultado
 
-Galería masonry limpia que comunica: 4 técnicos dentales reales, 2 en Ecuador y 2 en Brasil, con su trabajo identificado de un vistazo sin necesidad de hover. Estética minimalista mantenida.
+Galería limpia de 17 piezas reales, cada técnico con sus propias fotos asignadas correctamente. Estética minimalista: la imagen habla por sí sola y el nombre del autor aparece al interactuar.
