@@ -1,12 +1,15 @@
 import cadImplante from "@/assets/gallery/cad-implante.jpg";
-import tecnicoPinzas from "@/assets/gallery/tecnico-pinzas.jpg";
-import ceramicaMacro from "@/assets/gallery/ceramica-macro.jpg";
 import scanSuperior from "@/assets/gallery/scan-superior.png";
-import dosTecnicos from "@/assets/gallery/dos-tecnicos.jpg";
+import cadArcadaPilar from "@/assets/gallery/cad-arcada-pilar.jpg";
+import ceramicaMacro from "@/assets/gallery/ceramica-macro.jpg";
 import waxUpFirma from "@/assets/gallery/wax-up-firma.jpg";
-import tecnicoLupa from "@/assets/gallery/tecnico-lupa.jpg";
+import waxUpLineas from "@/assets/gallery/wax-up-lineas.jpg";
 import pilarImplante from "@/assets/gallery/pilar-implante.jpg";
+import tecnicoLupa from "@/assets/gallery/tecnico-lupa.jpg";
+import coronasOpal from "@/assets/gallery/coronas-opal.jpg";
 import arcadaPulida from "@/assets/gallery/arcada-pulida.jpg";
+import arcadaBrillante from "@/assets/gallery/arcada-brillante.jpg";
+import tecnicoPincel from "@/assets/gallery/tecnico-pincel.jpg";
 
 export type Technician = {
   image: string;
@@ -15,60 +18,78 @@ export type Technician = {
   city: string;
 };
 
-// Orden mezclado a propósito: render → foto → macro → escaneo → foto…
+// Orden mezclado: Ecuador y Brasil intercalados, sin piezas del mismo técnico consecutivas.
 export const technicians: Technician[] = [
   {
     image: cadImplante,
-    name: "Carlos Ruiz",
-    specialty: "Diseño CAD/CAM",
-    city: "Barcelona",
-  },
-  {
-    image: tecnicoPinzas,
-    name: "Javier Soto",
-    specialty: "Estratificación Cerámica",
-    city: "Sevilla",
-  },
-  {
-    image: ceramicaMacro,
-    name: "Laura Vidal",
-    specialty: "Estética Dental",
-    city: "Bilbao",
-  },
-  {
-    image: scanSuperior,
-    name: "Lucía Castro",
-    specialty: "Escaneado Intraoral",
-    city: "Valladolid",
-  },
-  {
-    image: dosTecnicos,
-    name: "Ana López & Hugo Martín",
-    specialty: "Trabajo en Equipo",
-    city: "Madrid",
-  },
-  {
-    image: waxUpFirma,
-    name: "María Fernández",
-    specialty: "Wax-Up Diagnóstico",
-    city: "Valencia",
-  },
-  {
-    image: tecnicoLupa,
-    name: "Pablo Moreno",
-    specialty: "Caracterización Bajo Lupa",
-    city: "Zaragoza",
+    name: "Santiago Guerra",
+    specialty: "Técnico Dental",
+    city: "Guayaquil, Ecuador",
   },
   {
     image: pilarImplante,
-    name: "Diego Navarro",
-    specialty: "Pilares sobre Implante",
-    city: "Granada",
+    name: "Ricardo Malise",
+    specialty: "Técnico Dental",
+    city: "Praia Brava, Brasil",
+  },
+  {
+    image: ceramicaMacro,
+    name: "Raúl Guerra",
+    specialty: "Técnico Dental",
+    city: "Guayaquil, Ecuador",
+  },
+  {
+    image: arcadaBrillante,
+    name: "Luiz Varelas",
+    specialty: "Técnico Dental",
+    city: "Praia Brava, Brasil",
+  },
+  {
+    image: scanSuperior,
+    name: "Santiago Guerra",
+    specialty: "Técnico Dental",
+    city: "Guayaquil, Ecuador",
+  },
+  {
+    image: tecnicoLupa,
+    name: "Ricardo Malise",
+    specialty: "Técnico Dental",
+    city: "Praia Brava, Brasil",
+  },
+  {
+    image: waxUpFirma,
+    name: "Raúl Guerra",
+    specialty: "Técnico Dental",
+    city: "Guayaquil, Ecuador",
+  },
+  {
+    image: tecnicoPincel,
+    name: "Luiz Varelas",
+    specialty: "Técnico Dental",
+    city: "Praia Brava, Brasil",
+  },
+  {
+    image: cadArcadaPilar,
+    name: "Santiago Guerra",
+    specialty: "Técnico Dental",
+    city: "Guayaquil, Ecuador",
+  },
+  {
+    image: coronasOpal,
+    name: "Ricardo Malise",
+    specialty: "Técnico Dental",
+    city: "Praia Brava, Brasil",
+  },
+  {
+    image: waxUpLineas,
+    name: "Raúl Guerra",
+    specialty: "Técnico Dental",
+    city: "Guayaquil, Ecuador",
   },
   {
     image: arcadaPulida,
-    name: "Sara Gómez",
-    specialty: "Coronas Zirconio",
-    city: "Málaga",
+    name: "Luiz Varelas",
+    specialty: "Técnico Dental",
+    city: "Praia Brava, Brasil",
   },
 ];
