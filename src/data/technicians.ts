@@ -57,7 +57,8 @@ export const technicians: Technician[] = [
 ];
 
 export type TechnicianProfile = TechnicianInfo & {
-  images: string[];
+  profileImage?: string;
+  gallery: string[];
 };
 
 const ALL_TECHNICIANS: TechnicianInfo[] = [SANTIAGO, RAUL, RICARDO, LUIZ];
@@ -66,8 +67,7 @@ export const getTechnicianBySlug = (slug: string): TechnicianProfile | undefined
   const info = ALL_TECHNICIANS.find((t) => t.slug === slug);
   if (!info) return undefined;
   const items = technicians.filter((t) => t.slug === slug);
-  const persons = items.filter((t) => t.isPerson);
-  const rest = items.filter((t) => !t.isPerson);
-  const images = [...persons, ...rest].map((t) => t.image);
-  return { ...info, images };
+  const profileImage = items.find((t) => t.isPerson)?.image;
+  const gallery = items.filter((t) => !t.isPerson).map((t) => t.image);
+  return { ...info, profileImage, gallery: profileImage ? gallery : items.map((t) => t.image) };
 };
