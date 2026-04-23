@@ -192,6 +192,9 @@ const TechnicianProfile = () => {
                   >
                     <span className="text-sm font-light text-foreground/80">
                       {item.service.name}
+                      <span className="ml-2 text-xs text-foreground/40">
+                        {isPerToothService(item.service.slug) ? "· por pieza" : "· por caso"}
+                      </span>
                     </span>
                     <div className="flex items-center gap-1">
                       <button
