@@ -53,7 +53,7 @@ const newCase = (
   service,
   indexInService,
   toothCount,
-  toothNumbers: "",
+  toothNumbers: [],
   patientName: "",
   extraoralRest: [],
   extraoralNatural: [],
