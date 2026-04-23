@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FileDropzone } from "./FileDropzone";
+import { ToothSelector } from "./ToothSelector";
 import { isImplantService, isPerToothService } from "@/lib/caseRequirements";
 import type { Service } from "@/data/services";
 
@@ -31,7 +32,7 @@ type CaseFormData = {
   service: Service;
   indexInService: number;
   toothCount: number;
-  toothNumbers: string;
+  toothNumbers: string[];
   patientName: string;
   extraoralRest: File[];
   extraoralNatural: File[];
@@ -52,7 +53,7 @@ const newCase = (
   service,
   indexInService,
   toothCount,
-  toothNumbers: "",
+  toothNumbers: [],
   patientName: "",
   extraoralRest: [],
   extraoralNatural: [],
@@ -81,14 +82,10 @@ const flattenCart = (cart: CartItem[]): CaseFormData[] => {
   return out;
 };
 
-const parseTeeth = (s: string): string[] =>
-  s.split(",").map((t) => t.trim()).filter(Boolean);
-
 const isCaseValid = (c: CaseFormData): boolean => {
   const implant = isImplantService(c.service.slug);
   const perTooth = isPerToothService(c.service.slug);
-  const teeth = parseTeeth(c.toothNumbers);
-  const toothOk = !perTooth || teeth.length >= c.toothCount;
+  const toothOk = !perTooth || c.toothNumbers.length >= c.toothCount;
   return (
     c.patientName.trim().length > 0 &&
     toothOk &&
@@ -230,18 +227,14 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                   {isPerToothService(active.service.slug) && (
                     <div className="space-y-2">
                       <label className="text-sm font-light text-foreground/80">
-                        Numeración FDI de las {active.toothCount} pieza{active.toothCount === 1 ? "" : "s"}{" "}
+                        Selecciona las {active.toothCount} pieza{active.toothCount === 1 ? "" : "s"} a tratar{" "}
                         <span className="text-foreground/80">*</span>
                       </label>
-                      <Input
+                      <ToothSelector
                         value={active.toothNumbers}
-                        onChange={(e) => updateActive({ toothNumbers: e.target.value })}
-                        placeholder="Ej: 11, 12, 21, 22"
+                        onChange={(teeth) => updateActive({ toothNumbers: teeth })}
+                        maxCount={active.toothCount}
                       />
-                      <p className="text-xs font-light text-foreground/50">
-                        Separadas por comas. Mínimo {active.toothCount} pieza
-                        {active.toothCount === 1 ? "" : "s"}.
-                      </p>
                     </div>
                   )}
                 </section>
