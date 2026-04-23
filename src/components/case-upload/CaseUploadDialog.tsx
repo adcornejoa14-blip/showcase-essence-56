@@ -198,7 +198,10 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
             <div className="overflow-y-auto px-6 py-6">
               <div className="mb-6">
                 <p className="text-xs font-light uppercase tracking-[0.2em] text-foreground/50">
-                  {active.service.name} · Caso #{active.indexInService}
+                  {active.service.name}
+                  {isPerToothService(active.service.slug)
+                    ? ` · ${active.toothCount} pieza${active.toothCount === 1 ? "" : "s"}`
+                    : ` · Caso #${active.indexInService}`}
                 </p>
               </div>
 
@@ -223,6 +226,24 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                       <Input value={today} readOnly className="bg-muted/30" />
                     </div>
                   </div>
+
+                  {isPerToothService(active.service.slug) && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-light text-foreground/80">
+                        Numeración FDI de las {active.toothCount} pieza{active.toothCount === 1 ? "" : "s"}{" "}
+                        <span className="text-foreground/80">*</span>
+                      </label>
+                      <Input
+                        value={active.toothNumbers}
+                        onChange={(e) => updateActive({ toothNumbers: e.target.value })}
+                        placeholder="Ej: 11, 12, 21, 22"
+                      />
+                      <p className="text-xs font-light text-foreground/50">
+                        Separadas por comas. Mínimo {active.toothCount} pieza
+                        {active.toothCount === 1 ? "" : "s"}.
+                      </p>
+                    </div>
+                  )}
                 </section>
 
                 {/* Fotos extraorales */}
