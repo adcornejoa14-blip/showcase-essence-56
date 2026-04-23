@@ -1,48 +1,42 @@
 
-# Foto de perfil + galería completa por técnico
+# Galería estilo Instagram en el perfil del técnico
 
 ## Qué hacer
 
-Al abrir el portafolio de un técnico (`/technician/:slug`), debe verse:
-
-1. **Foto de perfil** arriba: la imagen marcada como `isPerson: true` (el retrato real del técnico).
-2. **Galería completa debajo**: todas las imágenes de trabajo de ese técnico — sin recortar, sin filtrar — en el mismo orden en el que están listadas en `src/data/technicians.ts`.
-
-Hoy `getTechnicianBySlug` ya reordena para poner el retrato primero, pero el retrato aparece como una pieza más de la galería. Se quiere separarlo visualmente como "foto de perfil" y mostrar el resto como galería.
+En `/tecnico/:slug`, mostrar las fotos del portafolio como una **cuadrícula tipo Instagram** (cuadradas, pequeñas, sin separación o con separación mínima). Al **tocar/clicar una foto**, se abre la **publicación** en un modal con la imagen completa (sin recorte) centrada.
 
 ## Cambios
 
-### 1. `src/data/technicians.ts` — `getTechnicianBySlug`
+### 1. `src/pages/TechnicianProfile.tsx`
 
-Devolver dos colecciones en lugar de una sola lista mezclada:
+- Reemplazar la lista vertical de imágenes grandes por un **grid 3 columnas** (mobile y desktop, igual que Instagram), con `gap-1` y celdas `aspect-square` + `object-cover`.
+- Estado local `openIndex: number | null` para saber qué publicación está abierta.
+- Al clicar una celda → `setOpenIndex(i)`.
+- Renderizar un `<Dialog>` (shadcn, ya disponible) controlado por `open={openIndex !== null}`:
+  - `DialogContent` con ancho amplio (`max-w-3xl`), padding mínimo, fondo del tema.
+  - Dentro: la imagen completa (`object-contain`, `max-h-[85vh]`, `w-full`) — así se ve **la publicación entera**, sin recorte.
+  - Pie discreto opcional: `Foto N de M`.
+- Mantener la **foto de perfil circular** y el header tal como están.
 
-```ts
-{
-  technician: { slug, name, country, ... },
-  profileImage: ImageItem | undefined, // la que tiene isPerson: true
-  gallery: ImageItem[]                  // todas las demás, en orden original
-}
-```
+### 2. Sin cambios en `src/data/technicians.ts`
 
-Si por alguna razón no hay retrato (`isPerson`), `profileImage` queda `undefined` y la galería incluye todo.
+El shape `{ profileImage, gallery }` ya sirve.
 
-### 2. `src/pages/TechnicianProfile.tsx`
+### 3. Sin tocar `GalleryItem.tsx`
 
-Reordenar el render:
+La cuadrícula del perfil será inline (más simple y específica), sin reutilizar el componente de la home — son contextos distintos.
 
-- **Header del perfil** (ya existente: nombre, país, etc.) — sin cambios estructurales.
-- **Bloque de foto de perfil** nuevo, justo bajo el header:
-  - Imagen circular o cuadrada redondeada, centrada, tamaño moderado (≈`w-40 h-40 md:w-56 md:h-56`), `object-cover`, sombra sutil.
-  - Si `profileImage` no existe, no se renderiza el bloque.
-- **Galería** debajo: misma cuadrícula que ya hay, pero alimentada por `gallery` (sin el retrato, para no duplicarlo).
+## Detalles visuales
 
-Mantener la tipografía Poppins, espaciados y estilo visual actuales — no se introduce ningún color ni componente nuevo.
+- Grid: `grid grid-cols-3 gap-1` en todos los tamaños (puro Instagram). En desktop ancho se puede limitar el contenedor a `max-w-3xl mx-auto` para que las celdas no queden gigantes.
+- Hover desktop: leve `opacity-90` sobre la celda — sutil, sin etiquetas.
+- Cursor `pointer` en cada celda.
+- Modal: fondo `bg-background`, imagen centrada, sin bordes decorativos. El `DialogClose` por defecto de shadcn (esquina) basta.
 
 ## Archivos afectados
 
-- `src/data/technicians.ts` — ajustar el shape devuelto por `getTechnicianBySlug`.
-- `src/pages/TechnicianProfile.tsx` — separar foto de perfil de la galería; pasar la lista completa al grid.
+- `src/pages/TechnicianProfile.tsx` — único cambio.
 
 ## Resultado
 
-Al pulsar una imagen y entrar al perfil del técnico, su retrato aparece destacado como foto de perfil y debajo se ve la galería con **todas** sus piezas de trabajo, sin omisiones.
+El perfil del técnico se ve como un perfil de Instagram: foto de perfil arriba, cuadrícula 3×N de miniaturas cuadradas debajo. Al tocar una miniatura, se abre la imagen completa en un modal — la "publicación".
