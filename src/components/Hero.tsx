@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import logo from "@/assets/noma-logo.png";
+import logo from "@/assets/noma-logo-final.png";
 
 const Hero = () => {
   const [loaded, setLoaded] = useState(false);
