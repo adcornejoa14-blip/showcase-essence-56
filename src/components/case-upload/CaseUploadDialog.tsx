@@ -153,7 +153,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
         <div className="flex max-h-[90vh] flex-col">
           <DialogHeader className="border-b border-border px-6 py-4">
             <DialogTitle className="font-light">
-              Solicitar {totalCases} caso{totalCases === 1 ? "" : "s"}
+              Solicitar {totalCases} ficha{totalCases === 1 ? "" : "s"}
             </DialogTitle>
             <DialogDescription className="font-light">
               A {technician.name} · {technician.city} — {completedCount} de {totalCases} completos
