@@ -1,78 +1,86 @@
 
-# Carrito de servicios por técnico
+# Agrupar por paciente: cantidad = piezas, no casos
 
-## Qué construir
+## Problema
 
-Convertir la selección de servicios en un **carrito**: el dentista pulsa servicios y se añaden al carrito con **cantidad** (modificable con − / +). Un botón "Solicitar (N)" abre el formulario de subida — pero ahora el formulario gestiona **un caso por unidad** del carrito (cada unidad = un caso individual con su propio paciente y archivos).
+Hoy: si el dentista pide 4 carillas, debe rellenar 4 fichas con paciente/fotos/STL repetidos. La cantidad debería representar **número de piezas para el mismo paciente**, no casos independientes.
 
-## Cambios
+## Cambio de modelo
 
-### 1. `src/pages/TechnicianProfile.tsx`
+- **Servicios "por pieza"** (carillas, coronas anteriores, mock-up, wax-up, inlays, onlays, overlays, surgical guide + crown): la `quantity` del carrito = número de piezas → **una sola ficha por servicio**, con un campo extra "Piezas (FDI)" donde se listan los dientes.
+- **Servicios "por caso"** (surgical guide solo): la `quantity` sigue significando casos independientes → una ficha por unidad como ahora.
 
-**Estado nuevo:**
+Helper nuevo en `src/lib/caseRequirements.ts`:
 ```ts
-type CartItem = { service: Service; quantity: number };
-const [cart, setCart] = useState<CartItem[]>([]);
-const [checkoutOpen, setCheckoutOpen] = useState(false);
-```
-
-**Comportamiento de los chips de servicio:**
-- Click en chip → `addToCart(service)`: si ya existe, suma 1; si no, lo añade con `quantity: 1`.
-- El chip muestra un badge con la cantidad actual si está en el carrito (pequeño número a la derecha del nombre, estilo `text-foreground/50`).
-- El chip queda con borde más oscuro cuando está en el carrito (`border-foreground`).
-
-**Carrito visible (panel sticky abajo):**
-- Si `cart.length > 0`, mostrar barra fija inferior (`fixed bottom-0 inset-x-0 border-t border-border bg-background/95 backdrop-blur`).
-- Contenido: lista compacta con cada item: nombre del servicio + controles `−` `cantidad` `+` + botón X para eliminar.
-- A la derecha: total de unidades + botón **Solicitar (N)** que abre `CaseUploadDialog` en modo checkout.
-- Padding-bottom extra en el `<main>` cuando el carrito está visible para que no tape la galería.
-
-Eliminar el estado actual `selectedService` (ya no aplica) — el dialog se controla con `checkoutOpen` + el carrito.
-
-### 2. `src/components/case-upload/CaseUploadDialog.tsx`
-
-**Nueva API:**
-```ts
-type CartItem = { service: Service; quantity: number };
-type Props = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  cart: CartItem[];
-  technician: { name: string; city: string };
-  onSubmitted?: () => void; // para limpiar el carrito en el padre
+// Servicios donde la cantidad = piezas del mismo paciente
+export const isPerToothService = (slug: string): boolean => {
+  const perTooth = [
+    "cadcam-veneers", "cadcam-crown-anterior", "mockup-dsd", "wax-up",
+    "inlays", "onlays", "overlays", "surgical-guide-crown",
+  ];
+  return perTooth.includes(slug);
 };
 ```
 
-**Lógica:**
-- Aplanar el carrito en una lista de "casos individuales": para cada `CartItem`, generar `quantity` entradas. Ej: `[{service: A, qty: 2}, {service: B, qty: 1}]` → `[A#1, A#2, B#1]`.
-- Estado: array de `CaseFormData` (uno por caso aplanado), inicializado al abrir el modal.
-- UI:
-  - Header: "Solicitar {totalCases} caso(s)" + "A {technician.name} · {technician.city}".
-  - **Stepper/tabs** sencillo de navegación entre casos: lista vertical a la izquierda (en md+) o tabs arriba (en mobile) con `{Service.name} #{n}` y un check si el caso está completo. En móvil (viewport actual 791px ya es md), usar layout de dos columnas: nav lateral + formulario activo.
-  - Solo se muestra el formulario del caso activo. Los campos actuales (paciente, fotos extra/intra, STL, CBCT si implant, notas) van por caso.
-  - Indicador de progreso: "X de N casos completos".
-- Botón **Enviar** habilitado solo si **todos** los casos son válidos. Al pulsar: `toast.success("N casos enviados (demo)")`, llamar `onSubmitted?.()`, cerrar.
+## Cambios en `src/components/case-upload/CaseUploadDialog.tsx`
 
-**Helpers internos:**
-- `flattenCart(cart): Array<{service: Service, indexInService: number}>`
-- `isCaseValid(caseData, isImplant): boolean` (extraer de la validación actual)
+### Nuevo `flattenCart`
+```ts
+// Si el servicio es "por pieza" → 1 entrada con toothCount = quantity
+// Si es "por caso" → N entradas con toothCount = 1
+const flattenCart = (cart) => {
+  const out = [];
+  for (const item of cart) {
+    if (isPerToothService(item.service.slug)) {
+      out.push(newCase(item.service, 1, item.quantity)); // 1 ficha, N piezas
+    } else {
+      for (let i = 0; i < item.quantity; i++) {
+        out.push(newCase(item.service, i + 1, 1));
+      }
+    }
+  }
+  return out;
+};
+```
 
-### 3. Sin cambios en datos
+### `CaseFormData` añade
+- `toothCount: number` (informativo, viene del carrito)
+- `toothNumbers: string` (input controlado por el usuario, p. ej. "11, 21, 22, 23")
 
-`services.ts` y `technicians.ts` ya tienen lo necesario.
+### UI
+- En la sección "Paciente", añadir bajo el nombre:
+  - Texto informativo: "Piezas a tratar: **{toothCount}**" cuando `isPerToothService`.
+  - Input requerido "Numeración FDI de las piezas" (ej. `11, 21, 22, 23`) — placeholder con ejemplo, validación: al menos `toothCount` valores separados por coma.
+- Etiqueta del sidebar:
+  - Por pieza: `{Service.name} · {toothCount} piezas` (sin `#n`)
+  - Por caso: `{Service.name} #{n}` como ahora
+- Cabecera del formulario activo igual.
 
-## Detalles UX
+### Validación
+`isCaseValid` añade:
+```ts
+const teeth = c.toothNumbers.split(",").map(s => s.trim()).filter(Boolean);
+const toothOk = !isPerToothService(c.service.slug) || teeth.length >= c.toothCount;
+```
 
-- Chips: cuando están en el carrito, además del borde más oscuro, mostrar la cantidad como `· 2` al lado del nombre, en `text-foreground/50 font-light`.
-- Barra de carrito: una línea por item en desktop, scroll horizontal si hay muchos. Botones `−`/`+` redondos pequeños (`h-6 w-6 rounded-full border border-border`).
-- Modal de checkout: sidebar de navegación con cada caso listado, el activo destacado con `border-l-2 border-foreground`, los completos con un check `Check` lucide-icon en gris.
-- Mantener el lenguaje minimal y `font-light` actual.
+### Header del modal
+"Solicitar {totalCases} ficha(s)" en lugar de "caso(s)" — refleja que pueden agrupar varias piezas.
 
-## Archivos afectados
+## Cambios en `src/pages/TechnicianProfile.tsx`
 
-- **Editado:** `src/pages/TechnicianProfile.tsx` — añadir carrito, barra inferior, abrir checkout.
-- **Editado:** `src/components/case-upload/CaseUploadDialog.tsx` — aceptar carrito, navegación entre casos, validación múltiple, envío.
+Sin cambios estructurales del carrito: la `quantity` ya existe. Solo ajustar el texto del botón:
+- "Solicitar (N piezas/casos)" → mantener "Solicitar (N)" pero el tooltip/copy interno del modal explica la diferencia.
+
+Opcional (mejora ligera): en la barra del carrito, junto a cada item mostrar `· por pieza` o `· por caso` en `text-foreground/40 text-xs`, para que el dentista entienda qué significa la cantidad antes de abrir el modal.
 
 ## Resultado
 
-El dentista pulsa los servicios que quiere, ajusta cantidades en una barra de carrito, y al pulsar "Solicitar (N)" rellena un formulario por cada caso individual antes de enviar todo junto.
+- 4 carillas para Juan Pérez → 1 ficha con `toothCount=4`, el dentista escribe `11, 12, 21, 22` y sube **una sola vez** fotos + STL.
+- 2 surgical guides (pacientes distintos) → 2 fichas independientes como hasta ahora.
+- Mezcla: 4 carillas + 2 surgical guides → 1 ficha de carillas + 2 fichas de guías = 3 entradas en el sidebar.
+
+## Archivos afectados
+
+- **Editado:** `src/lib/caseRequirements.ts` — añadir `isPerToothService`.
+- **Editado:** `src/components/case-upload/CaseUploadDialog.tsx` — nuevo flatten, `toothCount`/`toothNumbers`, validación, etiquetas.
+- **Editado (opcional):** `src/pages/TechnicianProfile.tsx` — anotación "por pieza"/"por caso" en el carrito.
