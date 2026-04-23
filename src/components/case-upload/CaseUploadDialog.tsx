@@ -377,7 +377,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
               Cancelar
             </Button>
             <Button onClick={handleSubmit} disabled={!allValid}>
-              Enviar {totalCases} caso{totalCases === 1 ? "" : "s"}
+              Enviar {totalCases} ficha{totalCases === 1 ? "" : "s"}
             </Button>
           </DialogFooter>
         </div>
