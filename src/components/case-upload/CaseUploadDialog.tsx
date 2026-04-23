@@ -179,7 +179,12 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                         }`}
                       >
                         <span className="truncate">
-                          {c.service.name} <span className="text-foreground/40">#{c.indexInService}</span>
+                          {c.service.name}{" "}
+                          <span className="text-foreground/40">
+                            {isPerToothService(c.service.slug)
+                              ? `· ${c.toothCount} pieza${c.toothCount === 1 ? "" : "s"}`
+                              : `#${c.indexInService}`}
+                          </span>
                         </span>
                         {valid && <Check className="h-3.5 w-3.5 text-foreground/50" />}
                       </button>
