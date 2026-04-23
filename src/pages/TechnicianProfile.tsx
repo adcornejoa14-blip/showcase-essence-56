@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { getTechnicianBySlug } from "@/data/technicians";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const TechnicianProfile = () => {
   const { slug } = useParams<{ slug: string }>();
