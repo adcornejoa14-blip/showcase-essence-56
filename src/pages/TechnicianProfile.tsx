@@ -6,6 +6,7 @@ import { SERVICE_CATEGORIES, type Service } from "@/data/services";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CaseUploadDialog, type CartItem } from "@/components/case-upload/CaseUploadDialog";
+import { isPerToothService } from "@/lib/caseRequirements";
 
 const TechnicianProfile = () => {
   const { slug } = useParams<{ slug: string }>();
