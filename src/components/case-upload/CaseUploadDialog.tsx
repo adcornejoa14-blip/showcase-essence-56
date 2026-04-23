@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FileDropzone } from "./FileDropzone";
+import { ToothSelector } from "./ToothSelector";
 import { isImplantService, isPerToothService } from "@/lib/caseRequirements";
 import type { Service } from "@/data/services";
 
