@@ -227,18 +227,14 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                   {isPerToothService(active.service.slug) && (
                     <div className="space-y-2">
                       <label className="text-sm font-light text-foreground/80">
-                        Numeración FDI de las {active.toothCount} pieza{active.toothCount === 1 ? "" : "s"}{" "}
+                        Selecciona las {active.toothCount} pieza{active.toothCount === 1 ? "" : "s"} a tratar{" "}
                         <span className="text-foreground/80">*</span>
                       </label>
-                      <Input
+                      <ToothSelector
                         value={active.toothNumbers}
-                        onChange={(e) => updateActive({ toothNumbers: e.target.value })}
-                        placeholder="Ej: 11, 12, 21, 22"
+                        onChange={(teeth) => updateActive({ toothNumbers: teeth })}
+                        maxCount={active.toothCount}
                       />
-                      <p className="text-xs font-light text-foreground/50">
-                        Separadas por comas. Mínimo {active.toothCount} pieza
-                        {active.toothCount === 1 ? "" : "s"}.
-                      </p>
                     </div>
                   )}
                 </section>
