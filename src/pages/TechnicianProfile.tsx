@@ -1,18 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
 import { getTechnicianBySlug } from "@/data/technicians";
 import { SERVICE_CATEGORIES, type Service } from "@/data/services";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { CaseUploadDialog } from "@/components/case-upload/CaseUploadDialog";
 
 const TechnicianProfile = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -39,12 +31,6 @@ const TechnicianProfile = () => {
   if (!technician) {
     return <Navigate to="/" replace />;
   }
-
-  const handleConfirm = () => {
-    if (!selectedService) return;
-    toast.success("Solicitud enviada (demo)");
-    setSelectedService(null);
-  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -142,25 +128,12 @@ const TechnicianProfile = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog
+      <CaseUploadDialog
         open={selectedService !== null}
         onOpenChange={(open) => !open && setSelectedService(null)}
-      >
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-light">Solicitar servicio</DialogTitle>
-            <DialogDescription className="font-light">
-              ¿Quieres solicitar "{selectedService?.name}" a {technician.name}?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="outline" onClick={() => setSelectedService(null)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleConfirm}>Confirmar solicitud</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        service={selectedService}
+        technician={{ name: technician.name, city: technician.city }}
+      />
 
       <div className="py-12" />
     </main>
