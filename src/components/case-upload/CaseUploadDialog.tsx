@@ -132,7 +132,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
 
   const handleSubmit = () => {
     if (!allValid) return;
-    toast.success(`${totalCases} caso${totalCases === 1 ? "" : "s"} enviado${totalCases === 1 ? "" : "s"} (demo)`);
+    toast.success(`${totalCases} ficha${totalCases === 1 ? "" : "s"} enviada${totalCases === 1 ? "" : "s"} (demo)`);
     onSubmitted?.();
     onOpenChange(false);
   };
