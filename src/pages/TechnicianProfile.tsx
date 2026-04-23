@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { getTechnicianBySlug } from "@/data/technicians";
-import GalleryItem from "@/components/GalleryItem";
 
 const TechnicianProfile = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -49,19 +48,15 @@ const TechnicianProfile = () => {
       </div>
 
       <section aria-label={`Portafolio de ${technician.name}`} className="mt-8 w-full md:mt-12">
-        <div className="px-2 md:px-1">
-          <div className="grid grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-4">
+        <div className="mx-auto max-w-4xl px-4 md:px-6">
+          <div className="flex flex-col gap-6 md:gap-10">
             {technician.gallery.map((image, i) => (
-              <GalleryItem
+              <img
                 key={`${technician.slug}-${i}`}
-                tech={{
-                  image,
-                  name: technician.name,
-                  specialty: technician.specialty,
-                  city: technician.city,
-                }}
-                index={i}
-                showLabel={false}
+                src={image}
+                alt={`${technician.name} — trabajo ${i + 1}`}
+                loading="lazy"
+                className="block h-auto w-full"
               />
             ))}
           </div>
