@@ -1,8 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import { getTechnicianBySlug } from "@/data/technicians";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { SERVICE_CATEGORIES, type Service } from "@/data/services";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const TechnicianProfile = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -16,9 +26,25 @@ const TechnicianProfile = () => {
     }
   }, [slug, technician]);
 
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+
+  const servicesByCategory = useMemo(() => {
+    if (!technician) return [] as Array<{ category: string; items: Service[] }>;
+    return SERVICE_CATEGORIES.map((category) => ({
+      category,
+      items: technician.resolvedServices.filter((s) => s.category === category),
+    })).filter((g) => g.items.length > 0);
+  }, [technician]);
+
   if (!technician) {
     return <Navigate to="/" replace />;
   }
+
+  const handleConfirm = () => {
+    if (!selectedService) return;
+    toast.success("Solicitud enviada (demo)");
+    setSelectedService(null);
+  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -47,6 +73,33 @@ const TechnicianProfile = () => {
             {technician.specialty} · {technician.city}
           </p>
         </header>
+
+        {servicesByCategory.length > 0 && (
+          <section aria-label="Servicios" className="mt-10 md:mt-14">
+            <h2 className="text-xs font-light uppercase tracking-[0.2em] text-foreground/50">
+              Servicios
+            </h2>
+            <div className="mt-4 space-y-6">
+              {servicesByCategory.map((group) => (
+                <div key={group.category}>
+                  <h3 className="text-sm font-light text-foreground/70">{group.category}</h3>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {group.items.map((service) => (
+                      <button
+                        key={service.slug}
+                        type="button"
+                        onClick={() => setSelectedService(service)}
+                        className="rounded-full border border-border px-4 py-1.5 text-sm font-light text-foreground/80 transition-colors hover:border-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {service.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       <section aria-label={`Portafolio de ${technician.name}`} className="mt-8 w-full md:mt-12">
@@ -86,6 +139,26 @@ const TechnicianProfile = () => {
               </p>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={selectedService !== null}
+        onOpenChange={(open) => !open && setSelectedService(null)}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-light">Solicitar servicio</DialogTitle>
+            <DialogDescription className="font-light">
+              ¿Quieres solicitar "{selectedService?.name}" a {technician.name}?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setSelectedService(null)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleConfirm}>Confirmar solicitud</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
