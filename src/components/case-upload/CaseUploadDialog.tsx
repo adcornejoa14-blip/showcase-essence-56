@@ -30,6 +30,8 @@ type Props = {
 type CaseFormData = {
   service: Service;
   indexInService: number;
+  toothCount: number;
+  toothNumbers: string;
   patientName: string;
   extraoralRest: File[];
   extraoralNatural: File[];
@@ -42,9 +44,15 @@ type CaseFormData = {
   notes: string;
 };
 
-const newCase = (service: Service, indexInService: number): CaseFormData => ({
+const newCase = (
+  service: Service,
+  indexInService: number,
+  toothCount: number,
+): CaseFormData => ({
   service,
   indexInService,
+  toothCount,
+  toothNumbers: "",
   patientName: "",
   extraoralRest: [],
   extraoralNatural: [],
@@ -60,17 +68,30 @@ const newCase = (service: Service, indexInService: number): CaseFormData => ({
 const flattenCart = (cart: CartItem[]): CaseFormData[] => {
   const out: CaseFormData[] = [];
   for (const item of cart) {
-    for (let i = 0; i < item.quantity; i++) {
-      out.push(newCase(item.service, i + 1));
+    if (isPerToothService(item.service.slug)) {
+      // Una sola ficha agrupando todas las piezas
+      out.push(newCase(item.service, 1, item.quantity));
+    } else {
+      // Una ficha por unidad (paciente distinto)
+      for (let i = 0; i < item.quantity; i++) {
+        out.push(newCase(item.service, i + 1, 1));
+      }
     }
   }
   return out;
 };
 
+const parseTeeth = (s: string): string[] =>
+  s.split(",").map((t) => t.trim()).filter(Boolean);
+
 const isCaseValid = (c: CaseFormData): boolean => {
   const implant = isImplantService(c.service.slug);
+  const perTooth = isPerToothService(c.service.slug);
+  const teeth = parseTeeth(c.toothNumbers);
+  const toothOk = !perTooth || teeth.length >= c.toothCount;
   return (
     c.patientName.trim().length > 0 &&
+    toothOk &&
     c.extraoralRest.length > 0 &&
     c.extraoralNatural.length > 0 &&
     c.extraoralMax.length > 0 &&
