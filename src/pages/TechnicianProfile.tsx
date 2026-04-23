@@ -1,8 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import { getTechnicianBySlug } from "@/data/technicians";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { SERVICE_CATEGORIES, type Service } from "@/data/services";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const TechnicianProfile = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -16,9 +26,25 @@ const TechnicianProfile = () => {
     }
   }, [slug, technician]);
 
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+
+  const servicesByCategory = useMemo(() => {
+    if (!technician) return [] as Array<{ category: string; items: Service[] }>;
+    return SERVICE_CATEGORIES.map((category) => ({
+      category,
+      items: technician.resolvedServices.filter((s) => s.category === category),
+    })).filter((g) => g.items.length > 0);
+  }, [technician]);
+
   if (!technician) {
     return <Navigate to="/" replace />;
   }
+
+  const handleConfirm = () => {
+    if (!selectedService) return;
+    toast.success("Solicitud enviada (demo)");
+    setSelectedService(null);
+  };
 
   return (
     <main className="min-h-screen bg-background">
