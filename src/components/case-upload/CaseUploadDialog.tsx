@@ -32,7 +32,7 @@ type CaseFormData = {
   service: Service;
   indexInService: number;
   toothCount: number;
-  toothNumbers: string;
+  toothNumbers: string[];
   patientName: string;
   extraoralRest: File[];
   extraoralNatural: File[];
