@@ -7,6 +7,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 const TechnicianProfile = () => {
   const { slug } = useParams<{ slug: string }>();
   const technician = slug ? getTechnicianBySlug(slug) : undefined;
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
