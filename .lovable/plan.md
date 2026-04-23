@@ -1,117 +1,78 @@
 
-# Formulario de subida de casos por servicio
+# Carrito de servicios por técnico
 
 ## Qué construir
 
-Sustituir el modal actual de "Confirmar solicitud" por un **formulario completo de subida de caso** que se abre al pulsar un servicio en el perfil del técnico. El formulario adapta sus requisitos según el servicio: implantología pide CBCT extra; el resto comparte la base estándar.
+Convertir la selección de servicios en un **carrito**: el dentista pulsa servicios y se añaden al carrito con **cantidad** (modificable con − / +). Un botón "Solicitar (N)" abre el formulario de subida — pero ahora el formulario gestiona **un caso por unidad** del carrito (cada unidad = un caso individual con su propio paciente y archivos).
 
-Sin backend: los archivos se guardan en estado local, se previsualizan, y al enviar se muestra `toast` "Caso enviado (demo)" + reset.
+## Cambios
 
-## Estructura
+### 1. `src/pages/TechnicianProfile.tsx`
 
-### Nuevo: `src/lib/caseRequirements.ts`
-
-Helper para saber si un servicio es de implantología:
-
+**Estado nuevo:**
 ```ts
-import { services } from "@/data/services";
-export const isImplantService = (slug: string) =>
-  services.find(s => s.slug === slug)?.category === "Implant Dentistry";
+type CartItem = { service: Service; quantity: number };
+const [cart, setCart] = useState<CartItem[]>([]);
+const [checkoutOpen, setCheckoutOpen] = useState(false);
 ```
 
-### Nuevo: `src/components/case-upload/FileDropzone.tsx`
+**Comportamiento de los chips de servicio:**
+- Click en chip → `addToCart(service)`: si ya existe, suma 1; si no, lo añade con `quantity: 1`.
+- El chip muestra un badge con la cantidad actual si está en el carrito (pequeño número a la derecha del nombre, estilo `text-foreground/50`).
+- El chip queda con borde más oscuro cuando está en el carrito (`border-foreground`).
 
-Componente reutilizable de drag & drop:
-- Props: `label`, `accept`, `multiple?`, `value: File[]`, `onChange(files: File[])`, `previewType: "image" | "file"`, `example?: string` (URL ilustrativa opcional).
-- UI: zona `border-dashed rounded-md` con icono (`Upload` de lucide), texto "Arrastra o haz clic para subir", input file oculto, eventos `onDragOver/onDrop`.
-- Si hay archivos:
-  - `previewType="image"` → miniaturas cuadradas con `URL.createObjectURL`, botón X para eliminar.
-  - `previewType="file"` → lista con nombre + tamaño + X.
-- Si `example` está presente → pequeño thumbnail de referencia con label "Ejemplo" al lado del dropzone (guía visual de ángulo/calidad).
-- Cleanup de object URLs en unmount.
+**Carrito visible (panel sticky abajo):**
+- Si `cart.length > 0`, mostrar barra fija inferior (`fixed bottom-0 inset-x-0 border-t border-border bg-background/95 backdrop-blur`).
+- Contenido: lista compacta con cada item: nombre del servicio + controles `−` `cantidad` `+` + botón X para eliminar.
+- A la derecha: total de unidades + botón **Solicitar (N)** que abre `CaseUploadDialog` en modo checkout.
+- Padding-bottom extra en el `<main>` cuando el carrito está visible para que no tape la galería.
 
-### Nuevo: `src/components/case-upload/CaseUploadDialog.tsx`
+Eliminar el estado actual `selectedService` (ya no aplica) — el dialog se controla con `checkoutOpen` + el carrito.
 
-Modal con el formulario completo. Props: `open`, `onOpenChange`, `service`, `technician`.
+### 2. `src/components/case-upload/CaseUploadDialog.tsx`
 
-**Layout** (`DialogContent` con `max-w-3xl max-h-[90vh] overflow-y-auto`):
+**Nueva API:**
+```ts
+type CartItem = { service: Service; quantity: number };
+type Props = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  cart: CartItem[];
+  technician: { name: string; city: string };
+  onSubmitted?: () => void; // para limpiar el carrito en el padre
+};
+```
 
-1. **Header**
-   - `Solicitar: {service.name}`
-   - `A {technician.name} · {technician.city}`
+**Lógica:**
+- Aplanar el carrito en una lista de "casos individuales": para cada `CartItem`, generar `quantity` entradas. Ej: `[{service: A, qty: 2}, {service: B, qty: 1}]` → `[A#1, A#2, B#1]`.
+- Estado: array de `CaseFormData` (uno por caso aplanado), inicializado al abrir el modal.
+- UI:
+  - Header: "Solicitar {totalCases} caso(s)" + "A {technician.name} · {technician.city}".
+  - **Stepper/tabs** sencillo de navegación entre casos: lista vertical a la izquierda (en md+) o tabs arriba (en mobile) con `{Service.name} #{n}` y un check si el caso está completo. En móvil (viewport actual 791px ya es md), usar layout de dos columnas: nav lateral + formulario activo.
+  - Solo se muestra el formulario del caso activo. Los campos actuales (paciente, fotos extra/intra, STL, CBCT si implant, notas) van por caso.
+  - Indicador de progreso: "X de N casos completos".
+- Botón **Enviar** habilitado solo si **todos** los casos son válidos. Al pulsar: `toast.success("N casos enviados (demo)")`, llamar `onSubmitted?.()`, cerrar.
 
-2. **Sección "Paciente"**
-   - Input `Nombre completo del paciente` (obligatorio).
-   - Campo `Fecha` readonly mostrando `new Date().toLocaleDateString("es-ES")`.
+**Helpers internos:**
+- `flattenCart(cart): Array<{service: Service, indexInService: number}>`
+- `isCaseValid(caseData, isImplant): boolean` (extraer de la validación actual)
 
-3. **Sección "Fotos extraorales"** (obligatorias)
-   - 3 dropzones tipo imagen, single-file cada uno:
-     - Sonrisa en reposo
-     - Sonrisa natural
-     - Sonrisa máxima
-   - Cada uno con miniatura de **ejemplo** (placeholder ilustrativo desde `/public` o URL temporal — usar `placeholder.svg` que ya existe hasta que el usuario provea referencias reales; mostrarlo con caption "Ejemplo de ángulo").
+### 3. Sin cambios en datos
 
-4. **Sección "Fotos intraorales"** (obligatorias)
-   - 1 dropzone:
-     - Vista frontal anterior (con ejemplo).
+`services.ts` y `technicians.ts` ya tienen lo necesario.
 
-5. **Sección "Archivos digitales"** (obligatorios)
-   - 3 dropzones tipo file (`.stl,.ply`):
-     - STL maxilar superior
-     - STL mandíbula
-     - STL de mordida
+## Detalles UX
 
-6. **Sección condicional "Tomografía"** (solo si `isImplantService(service.slug)`)
-   - 1 dropzone tipo file (`.zip,.dcm`, multiple) — etiqueta "CBCT (DICOM, .zip recomendado)" obligatorio.
-
-7. **Notas** (opcional)
-   - `<Textarea>` libre.
-
-8. **Footer**
-   - **Cancelar** → cierra y resetea.
-   - **Enviar caso** → deshabilitado mientras falten requeridos. Al pulsar: `toast.success("Caso enviado (demo)")`, cerrar, reset.
-
-**Estado local** (un `useState` por campo o un objeto `formData`):
-- `patientName: string`
-- `extraoral: { rest: File[], natural: File[], max: File[] }`
-- `intraoral: { frontal: File[] }`
-- `stl: { upper: File[], lower: File[], bite: File[] }`
-- `cbct: File[]` (solo implant)
-- `notes: string`
-
-**Validación**: helper `isValid()` que comprueba todos los campos requeridos según `isImplantService`. El botón "Enviar caso" usa `disabled={!isValid()}`.
-
-### Editado: `src/pages/TechnicianProfile.tsx`
-
-- Importar `CaseUploadDialog`.
-- Mantener el estado `selectedService`.
-- Reemplazar el `<Dialog>` actual de confirmación por:
-  ```tsx
-  <CaseUploadDialog
-    open={selectedService !== null}
-    onOpenChange={(o) => !o && setSelectedService(null)}
-    service={selectedService}
-    technician={technician}
-  />
-  ```
-- Eliminar imports ya no usados (`DialogHeader`, `DialogTitle`, `DialogDescription`, `DialogFooter` del modal de confirmación; `Button` se mantiene si se usa en otro sitio — comprobar).
-
-## Detalles de UX/visual
-
-- Lenguaje minimal coherente con el resto del perfil: `font-light`, bordes `border-border`, sin colores nuevos.
-- Cada sección con `<h3>` en `text-sm font-light uppercase tracking-[0.15em] text-foreground/60` + separador inferior sutil (`border-b border-border pb-2`).
-- Dropzones: estado `hover` y `dragover` con `border-foreground/40 bg-foreground/5`.
-- Miniaturas de ejemplo: 64×64 con caption pequeño en gris.
-- Asterisco rojo discreto (`text-foreground/80`) en labels obligatorios — sin introducir un color nuevo, solo peso/símbolo.
-- Imagen de ejemplo placeholder: usar `/placeholder.svg` ya existente para todas las guías visuales (el usuario podrá reemplazar las URLs después).
+- Chips: cuando están en el carrito, además del borde más oscuro, mostrar la cantidad como `· 2` al lado del nombre, en `text-foreground/50 font-light`.
+- Barra de carrito: una línea por item en desktop, scroll horizontal si hay muchos. Botones `−`/`+` redondos pequeños (`h-6 w-6 rounded-full border border-border`).
+- Modal de checkout: sidebar de navegación con cada caso listado, el activo destacado con `border-l-2 border-foreground`, los completos con un check `Check` lucide-icon en gris.
+- Mantener el lenguaje minimal y `font-light` actual.
 
 ## Archivos afectados
 
-- **Nuevo:** `src/lib/caseRequirements.ts`
-- **Nuevo:** `src/components/case-upload/FileDropzone.tsx`
-- **Nuevo:** `src/components/case-upload/CaseUploadDialog.tsx`
-- **Editado:** `src/pages/TechnicianProfile.tsx` — sustituir modal de confirmación por `CaseUploadDialog`.
+- **Editado:** `src/pages/TechnicianProfile.tsx` — añadir carrito, barra inferior, abrir checkout.
+- **Editado:** `src/components/case-upload/CaseUploadDialog.tsx` — aceptar carrito, navegación entre casos, validación múltiple, envío.
 
 ## Resultado
 
-Al pulsar un servicio, el dentista ve un formulario claro y por secciones donde sube los datos del paciente, las fotos extra/intraorales con guías visuales, los STL y — si es implantología — además el CBCT. Drag & drop, previsualizaciones, validación de obligatorios y envío demo.
+El dentista pulsa los servicios que quiere, ajusta cantidades en una barra de carrito, y al pulsar "Solicitar (N)" rellena un formulario por cada caso individual antes de enviar todo junto.
