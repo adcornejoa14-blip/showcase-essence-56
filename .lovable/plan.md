@@ -1,42 +1,72 @@
 
-# Galería estilo Instagram en el perfil del técnico
+# Catálogo de servicios por técnico + selector para el dentista
 
-## Qué hacer
+## Qué construir
 
-En `/tecnico/:slug`, mostrar las fotos del portafolio como una **cuadrícula tipo Instagram** (cuadradas, pequeñas, sin separación o con separación mínima). Al **tocar/clicar una foto**, se abre la **publicación** en un modal con la imagen completa (sin recorte) centrada.
+Añadir un sistema de **servicios** al marketplace, asignar un subconjunto aleatorio (pero estable) a cada técnico, mostrarlos en su perfil y permitir al dentista **seleccionar uno** desde el perfil del técnico.
 
-## Cambios
+Sin backend todavía: la selección abre un modal de confirmación ("Solicitar [servicio] a [técnico]") con un botón placeholder. Listo para conectar más adelante a un flujo de pedido real.
 
-### 1. `src/pages/TechnicianProfile.tsx`
+## Estructura de datos
 
-- Reemplazar la lista vertical de imágenes grandes por un **grid 3 columnas** (mobile y desktop, igual que Instagram), con `gap-1` y celdas `aspect-square` + `object-cover`.
-- Estado local `openIndex: number | null` para saber qué publicación está abierta.
-- Al clicar una celda → `setOpenIndex(i)`.
-- Renderizar un `<Dialog>` (shadcn, ya disponible) controlado por `open={openIndex !== null}`:
-  - `DialogContent` con ancho amplio (`max-w-3xl`), padding mínimo, fondo del tema.
-  - Dentro: la imagen completa (`object-contain`, `max-h-[85vh]`, `w-full`) — así se ve **la publicación entera**, sin recorte.
-  - Pie discreto opcional: `Foto N de M`.
-- Mantener la **foto de perfil circular** y el header tal como están.
+### Nuevo: `src/data/services.ts`
 
-### 2. Sin cambios en `src/data/technicians.ts`
+```ts
+export type ServiceCategory =
+  | "Aesthetic Anterior Dentistry"
+  | "Posterior Dentistry"
+  | "Implant Dentistry";
 
-El shape `{ profileImage, gallery }` ya sirve.
+export type Service = { slug: string; name: string; category: ServiceCategory };
 
-### 3. Sin tocar `GalleryItem.tsx`
+export const services: Service[] = [
+  // Aesthetic Anterior Dentistry
+  { slug: "cadcam-veneers",         name: "CAD/CAM Veneers Design",        category: "Aesthetic Anterior Dentistry" },
+  { slug: "cadcam-crown-anterior",  name: "CAD/CAM Crown Design (Anterior)", category: "Aesthetic Anterior Dentistry" },
+  { slug: "mockup-dsd",             name: "Mock-Up (Digital Smile Design)", category: "Aesthetic Anterior Dentistry" },
+  { slug: "wax-up",                 name: "Wax-Up (Diagnostic)",           category: "Aesthetic Anterior Dentistry" },
+  // Posterior
+  { slug: "inlays",   name: "Inlays",   category: "Posterior Dentistry" },
+  { slug: "onlays",   name: "Onlays",   category: "Posterior Dentistry" },
+  { slug: "overlays", name: "Overlays", category: "Posterior Dentistry" },
+  // Implant
+  { slug: "surgical-guide",         name: "Surgical Guide (Implant Guide)",     category: "Implant Dentistry" },
+  { slug: "surgical-guide-crown",   name: "Surgical Guide + Crown Design",      category: "Implant Dentistry" },
+];
+```
 
-La cuadrícula del perfil será inline (más simple y específica), sin reutilizar el componente de la home — son contextos distintos.
+### `src/data/technicians.ts`
 
-## Detalles visuales
+- Añadir `services: string[]` (array de slugs) a cada técnico.
+- Asignación **fija pero variada** (no `Math.random()` en runtime — se mantiene estable entre renders y entre sesiones). Cada técnico recibe 4–6 servicios cubriendo al menos 2 categorías. Ejemplo:
+  - Santiago: veneers, crown-anterior, wax-up, inlays, overlays
+  - Raúl: mockup-dsd, wax-up, onlays, surgical-guide-crown
+  - Ricardo: veneers, crown-anterior, mockup-dsd, surgical-guide, surgical-guide-crown
+  - Luiz: wax-up, inlays, onlays, overlays, surgical-guide
+- `getTechnicianBySlug` devuelve también `services: Service[]` (resueltos desde slugs vía un helper en `services.ts`).
 
-- Grid: `grid grid-cols-3 gap-1` en todos los tamaños (puro Instagram). En desktop ancho se puede limitar el contenedor a `max-w-3xl mx-auto` para que las celdas no queden gigantes.
-- Hover desktop: leve `opacity-90` sobre la celda — sutil, sin etiquetas.
-- Cursor `pointer` en cada celda.
-- Modal: fondo `bg-background`, imagen centrada, sin bordes decorativos. El `DialogClose` por defecto de shadcn (esquina) basta.
+## UI
+
+### `src/pages/TechnicianProfile.tsx`
+
+Nueva sección **entre el header y la galería**:
+
+- Título pequeño: "Servicios".
+- Servicios agrupados por categoría (3 sub-bloques). Cada categoría: subtítulo discreto + lista de "chips" seleccionables (botones tipo pill, estilo `border` + `rounded-full`, en línea con el lenguaje minimal actual — Poppins, sin colores nuevos).
+- Estado local `selected: Service | null`. Click en un chip → `setSelected(service)` y abre `<Dialog>`.
+- Dialog: 
+  - Título: `Solicitar servicio`
+  - Texto: `¿Quieres solicitar "{service.name}" a {technician.name}?`
+  - Dos botones: **Cancelar** (cierra) y **Confirmar solicitud** (placeholder — por ahora solo cierra el modal y muestra un `toast` "Solicitud enviada (demo)"; sin lógica real).
+
+Sin cambios en home, header, ni datos de imágenes.
 
 ## Archivos afectados
 
-- `src/pages/TechnicianProfile.tsx` — único cambio.
+- **Nuevo:** `src/data/services.ts`
+- **Editado:** `src/data/technicians.ts` — añadir `services` a cada técnico + exponerlos en `getTechnicianBySlug`.
+- **Editado:** `src/pages/TechnicianProfile.tsx` — sección de servicios + modal de solicitud.
 
 ## Resultado
 
-El perfil del técnico se ve como un perfil de Instagram: foto de perfil arriba, cuadrícula 3×N de miniaturas cuadradas debajo. Al tocar una miniatura, se abre la imagen completa en un modal — la "publicación".
+En el perfil de cada técnico aparece un bloque "Servicios" con sus especialidades agrupadas por categoría. El dentista pulsa el servicio que quiere y se abre un modal para confirmar la solicitud (UI lista, lógica de envío pendiente).
