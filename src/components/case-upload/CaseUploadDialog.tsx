@@ -24,7 +24,7 @@ type Props = {
   technician: TechnicianLite;
 };
 
-const EXAMPLE = "/placeholder.svg";
+
 
 const initialState = () => ({
   patientName: "",
@@ -117,7 +117,6 @@ export const CaseUploadDialog = ({ open, onOpenChange, service, technician }: Pr
                 previewType="image"
                 value={data.extraoralRest}
                 onChange={(files) => setData({ ...data, extraoralRest: files })}
-                example={EXAMPLE}
               />
               <FileDropzone
                 label="Sonrisa natural"
@@ -126,7 +125,6 @@ export const CaseUploadDialog = ({ open, onOpenChange, service, technician }: Pr
                 previewType="image"
                 value={data.extraoralNatural}
                 onChange={(files) => setData({ ...data, extraoralNatural: files })}
-                example={EXAMPLE}
               />
               <FileDropzone
                 label="Sonrisa máxima"
@@ -135,7 +133,6 @@ export const CaseUploadDialog = ({ open, onOpenChange, service, technician }: Pr
                 previewType="image"
                 value={data.extraoralMax}
                 onChange={(files) => setData({ ...data, extraoralMax: files })}
-                example={EXAMPLE}
               />
             </div>
           </section>
@@ -151,7 +148,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, service, technician }: Pr
                 previewType="image"
                 value={data.intraoralFrontal}
                 onChange={(files) => setData({ ...data, intraoralFrontal: files })}
-                example={EXAMPLE}
+                
               />
             </div>
           </section>
