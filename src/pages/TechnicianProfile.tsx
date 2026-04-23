@@ -30,7 +30,15 @@ const TechnicianProfile = () => {
           Volver
         </Link>
 
-        <header className="mt-8 md:mt-12">
+        <header className="mt-8 flex flex-col items-center text-center md:mt-12">
+          {technician.profileImage && (
+            <img
+              src={technician.profileImage}
+              alt={`Foto de ${technician.name}`}
+              className="mb-6 h-40 w-40 rounded-full object-cover shadow-md md:h-56 md:w-56"
+              loading="lazy"
+            />
+          )}
           <h1 className="text-3xl font-light tracking-tight text-foreground md:text-5xl">
             {technician.name}
           </h1>
@@ -43,7 +51,7 @@ const TechnicianProfile = () => {
       <section aria-label={`Portafolio de ${technician.name}`} className="mt-8 w-full md:mt-12">
         <div className="px-2 md:px-1">
           <div className="grid grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-4">
-            {technician.images.map((image, i) => (
+            {technician.gallery.map((image, i) => (
               <GalleryItem
                 key={`${technician.slug}-${i}`}
                 tech={{
