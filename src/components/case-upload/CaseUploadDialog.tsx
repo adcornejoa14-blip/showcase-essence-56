@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FileDropzone } from "./FileDropzone";
-import { isImplantService } from "@/lib/caseRequirements";
+import { isImplantService, isPerToothService } from "@/lib/caseRequirements";
 import type { Service } from "@/data/services";
 
 type TechnicianLite = { name: string; city: string };
@@ -30,6 +30,8 @@ type Props = {
 type CaseFormData = {
   service: Service;
   indexInService: number;
+  toothCount: number;
+  toothNumbers: string;
   patientName: string;
   extraoralRest: File[];
   extraoralNatural: File[];
@@ -42,9 +44,15 @@ type CaseFormData = {
   notes: string;
 };
 
-const newCase = (service: Service, indexInService: number): CaseFormData => ({
+const newCase = (
+  service: Service,
+  indexInService: number,
+  toothCount: number,
+): CaseFormData => ({
   service,
   indexInService,
+  toothCount,
+  toothNumbers: "",
   patientName: "",
   extraoralRest: [],
   extraoralNatural: [],
@@ -60,17 +68,30 @@ const newCase = (service: Service, indexInService: number): CaseFormData => ({
 const flattenCart = (cart: CartItem[]): CaseFormData[] => {
   const out: CaseFormData[] = [];
   for (const item of cart) {
-    for (let i = 0; i < item.quantity; i++) {
-      out.push(newCase(item.service, i + 1));
+    if (isPerToothService(item.service.slug)) {
+      // Una sola ficha agrupando todas las piezas
+      out.push(newCase(item.service, 1, item.quantity));
+    } else {
+      // Una ficha por unidad (paciente distinto)
+      for (let i = 0; i < item.quantity; i++) {
+        out.push(newCase(item.service, i + 1, 1));
+      }
     }
   }
   return out;
 };
 
+const parseTeeth = (s: string): string[] =>
+  s.split(",").map((t) => t.trim()).filter(Boolean);
+
 const isCaseValid = (c: CaseFormData): boolean => {
   const implant = isImplantService(c.service.slug);
+  const perTooth = isPerToothService(c.service.slug);
+  const teeth = parseTeeth(c.toothNumbers);
+  const toothOk = !perTooth || teeth.length >= c.toothCount;
   return (
     c.patientName.trim().length > 0 &&
+    toothOk &&
     c.extraoralRest.length > 0 &&
     c.extraoralNatural.length > 0 &&
     c.extraoralMax.length > 0 &&
@@ -111,7 +132,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
 
   const handleSubmit = () => {
     if (!allValid) return;
-    toast.success(`${totalCases} caso${totalCases === 1 ? "" : "s"} enviado${totalCases === 1 ? "" : "s"} (demo)`);
+    toast.success(`${totalCases} ficha${totalCases === 1 ? "" : "s"} enviada${totalCases === 1 ? "" : "s"} (demo)`);
     onSubmitted?.();
     onOpenChange(false);
   };
@@ -132,7 +153,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
         <div className="flex max-h-[90vh] flex-col">
           <DialogHeader className="border-b border-border px-6 py-4">
             <DialogTitle className="font-light">
-              Solicitar {totalCases} caso{totalCases === 1 ? "" : "s"}
+              Solicitar {totalCases} ficha{totalCases === 1 ? "" : "s"}
             </DialogTitle>
             <DialogDescription className="font-light">
               A {technician.name} · {technician.city} — {completedCount} de {totalCases} completos
@@ -158,7 +179,12 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                         }`}
                       >
                         <span className="truncate">
-                          {c.service.name} <span className="text-foreground/40">#{c.indexInService}</span>
+                          {c.service.name}{" "}
+                          <span className="text-foreground/40">
+                            {isPerToothService(c.service.slug)
+                              ? `· ${c.toothCount} pieza${c.toothCount === 1 ? "" : "s"}`
+                              : `#${c.indexInService}`}
+                          </span>
                         </span>
                         {valid && <Check className="h-3.5 w-3.5 text-foreground/50" />}
                       </button>
@@ -172,7 +198,10 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
             <div className="overflow-y-auto px-6 py-6">
               <div className="mb-6">
                 <p className="text-xs font-light uppercase tracking-[0.2em] text-foreground/50">
-                  {active.service.name} · Caso #{active.indexInService}
+                  {active.service.name}
+                  {isPerToothService(active.service.slug)
+                    ? ` · ${active.toothCount} pieza${active.toothCount === 1 ? "" : "s"}`
+                    : ` · Caso #${active.indexInService}`}
                 </p>
               </div>
 
@@ -197,6 +226,24 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                       <Input value={today} readOnly className="bg-muted/30" />
                     </div>
                   </div>
+
+                  {isPerToothService(active.service.slug) && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-light text-foreground/80">
+                        Numeración FDI de las {active.toothCount} pieza{active.toothCount === 1 ? "" : "s"}{" "}
+                        <span className="text-foreground/80">*</span>
+                      </label>
+                      <Input
+                        value={active.toothNumbers}
+                        onChange={(e) => updateActive({ toothNumbers: e.target.value })}
+                        placeholder="Ej: 11, 12, 21, 22"
+                      />
+                      <p className="text-xs font-light text-foreground/50">
+                        Separadas por comas. Mínimo {active.toothCount} pieza
+                        {active.toothCount === 1 ? "" : "s"}.
+                      </p>
+                    </div>
+                  )}
                 </section>
 
                 {/* Fotos extraorales */}
@@ -330,7 +377,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
               Cancelar
             </Button>
             <Button onClick={handleSubmit} disabled={!allValid}>
-              Enviar {totalCases} caso{totalCases === 1 ? "" : "s"}
+              Enviar {totalCases} ficha{totalCases === 1 ? "" : "s"}
             </Button>
           </DialogFooter>
         </div>

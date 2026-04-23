@@ -6,6 +6,7 @@ import { SERVICE_CATEGORIES, type Service } from "@/data/services";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CaseUploadDialog, type CartItem } from "@/components/case-upload/CaseUploadDialog";
+import { isPerToothService } from "@/lib/caseRequirements";
 
 const TechnicianProfile = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -191,6 +192,9 @@ const TechnicianProfile = () => {
                   >
                     <span className="text-sm font-light text-foreground/80">
                       {item.service.name}
+                      <span className="ml-2 text-xs text-foreground/40">
+                        {isPerToothService(item.service.slug) ? "· por pieza" : "· por caso"}
+                      </span>
                     </span>
                     <div className="flex items-center gap-1">
                       <button
