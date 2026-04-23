@@ -23,11 +23,14 @@ import tecnicoPincel from "@/assets/gallery/tecnico-pincel.jpg";
 import arcadaBrillante from "@/assets/gallery/arcada-brillante.jpg";
 import coronasOpal from "@/assets/gallery/coronas-opal.jpg";
 
+import { getServicesBySlugs, type Service } from "@/data/services";
+
 export type TechnicianInfo = {
   slug: string;
   name: string;
   specialty: string;
   city: string;
+  services: string[];
 };
 
 export type Technician = TechnicianInfo & {
@@ -35,10 +38,34 @@ export type Technician = TechnicianInfo & {
   isPerson?: boolean;
 };
 
-const SANTIAGO: TechnicianInfo = { slug: "santiago-guerra", name: "Santiago Guerra", specialty: "Técnico Dental", city: "Guayaquil, Ecuador" };
-const RAUL: TechnicianInfo = { slug: "raul-guerra", name: "Raúl Guerra", specialty: "Técnico Dental", city: "Guayaquil, Ecuador" };
-const RICARDO: TechnicianInfo = { slug: "ricardo-malise", name: "Ricardo Malise", specialty: "Técnico Dental", city: "Praia Brava, Brasil" };
-const LUIZ: TechnicianInfo = { slug: "luiz-varelas", name: "Luiz Varelas", specialty: "Técnico Dental", city: "Praia Brava, Brasil" };
+const SANTIAGO: TechnicianInfo = {
+  slug: "santiago-guerra",
+  name: "Santiago Guerra",
+  specialty: "Técnico Dental",
+  city: "Guayaquil, Ecuador",
+  services: ["cadcam-veneers", "cadcam-crown-anterior", "wax-up", "inlays", "overlays"],
+};
+const RAUL: TechnicianInfo = {
+  slug: "raul-guerra",
+  name: "Raúl Guerra",
+  specialty: "Técnico Dental",
+  city: "Guayaquil, Ecuador",
+  services: ["mockup-dsd", "wax-up", "onlays", "surgical-guide-crown"],
+};
+const RICARDO: TechnicianInfo = {
+  slug: "ricardo-malise",
+  name: "Ricardo Malise",
+  specialty: "Técnico Dental",
+  city: "Praia Brava, Brasil",
+  services: ["cadcam-veneers", "cadcam-crown-anterior", "mockup-dsd", "surgical-guide", "surgical-guide-crown"],
+};
+const LUIZ: TechnicianInfo = {
+  slug: "luiz-varelas",
+  name: "Luiz Varelas",
+  specialty: "Técnico Dental",
+  city: "Praia Brava, Brasil",
+  services: ["wax-up", "inlays", "onlays", "overlays", "surgical-guide"],
+};
 
 // Orden mezclado: Ecuador y Brasil intercalados, sin piezas del mismo técnico consecutivas.
 export const technicians: Technician[] = [
@@ -59,6 +86,7 @@ export const technicians: Technician[] = [
 export type TechnicianProfile = TechnicianInfo & {
   profileImage?: string;
   gallery: string[];
+  resolvedServices: Service[];
 };
 
 const ALL_TECHNICIANS: TechnicianInfo[] = [SANTIAGO, RAUL, RICARDO, LUIZ];
@@ -69,5 +97,10 @@ export const getTechnicianBySlug = (slug: string): TechnicianProfile | undefined
   const items = technicians.filter((t) => t.slug === slug);
   const profileImage = items.find((t) => t.isPerson)?.image;
   const gallery = items.filter((t) => !t.isPerson).map((t) => t.image);
-  return { ...info, profileImage, gallery: profileImage ? gallery : items.map((t) => t.image) };
+  return {
+    ...info,
+    profileImage,
+    gallery: profileImage ? gallery : items.map((t) => t.image),
+    resolvedServices: getServicesBySlugs(info.services),
+  };
 };
