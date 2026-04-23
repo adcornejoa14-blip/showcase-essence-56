@@ -82,14 +82,10 @@ const flattenCart = (cart: CartItem[]): CaseFormData[] => {
   return out;
 };
 
-const parseTeeth = (s: string): string[] =>
-  s.split(",").map((t) => t.trim()).filter(Boolean);
-
 const isCaseValid = (c: CaseFormData): boolean => {
   const implant = isImplantService(c.service.slug);
   const perTooth = isPerToothService(c.service.slug);
-  const teeth = parseTeeth(c.toothNumbers);
-  const toothOk = !perTooth || teeth.length >= c.toothCount;
+  const toothOk = !perTooth || c.toothNumbers.length >= c.toothCount;
   return (
     c.patientName.trim().length > 0 &&
     toothOk &&
