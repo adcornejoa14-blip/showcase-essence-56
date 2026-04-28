@@ -9,13 +9,22 @@ interface Props {
 }
 
 type Errors = Partial<Record<
-  "nombre" | "edad" | "email" | "especialidad" | "password" | "passwordRepeat" | "profilePhoto" | "workPhotos",
+  "nombre" | "fechaNacimiento" | "email" | "especialidad" | "password" | "passwordRepeat" | "profilePhoto" | "workPhotos",
   string
 >>;
 
+const calculateAge = (isoDate: string): number => {
+  const dob = new Date(isoDate);
+  const now = new Date();
+  let age = now.getFullYear() - dob.getFullYear();
+  const m = now.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) age--;
+  return age;
+};
+
 const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
   const [nombre, setNombre] = useState("");
-  const [edad, setEdad] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [email, setEmail] = useState("");
   const [especialidad, setEspecialidad] = useState("");
   const [password, setPassword] = useState("");
@@ -54,9 +63,13 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
   const validate = (): boolean => {
     const e: Errors = {};
     if (nombre.trim().length < 2) e.nombre = "Introduce tu nombre completo.";
-    const edadNum = Number(edad);
-    if (!edad || Number.isNaN(edadNum) || edadNum < 18 || edadNum > 99)
-      e.edad = "Edad entre 18 y 99.";
+    if (!fechaNacimiento) {
+      e.fechaNacimiento = "Indica tu fecha de nacimiento.";
+    } else {
+      const age = calculateAge(fechaNacimiento);
+      if (Number.isNaN(age) || age < 18 || age > 99)
+        e.fechaNacimiento = "Debes ser mayor de 18 años.";
+    }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Email no válido.";
     if (especialidad.trim().length < 2) e.especialidad = "Indica tu especialidad.";
     if (password.length < 6) e.password = "Mínimo 6 caracteres.";
@@ -137,20 +150,21 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
           )}
         </div>
 
-        {/* Edad */}
+        {/* Fecha de nacimiento */}
         <div>
-          <label className="text-xs font-light tracking-wide text-foreground/50">Edad</label>
+          <label className="text-xs font-light tracking-wide text-foreground/50">
+            Fecha de nacimiento
+          </label>
           <input
-            type="number"
-            min={18}
-            max={99}
-            value={edad}
-            onChange={(e) => setEdad(e.target.value)}
+            type="date"
+            value={fechaNacimiento}
+            onChange={(e) => setFechaNacimiento(e.target.value)}
+            max={new Date().toISOString().split("T")[0]}
+            min="1900-01-01"
             className={fieldClass}
-            placeholder="28"
           />
-          {errors.edad && (
-            <p className="mt-1 text-xs font-light text-destructive">{errors.edad}</p>
+          {errors.fechaNacimiento && (
+            <p className="mt-1 text-xs font-light text-destructive">{errors.fechaNacimiento}</p>
           )}
         </div>
 
