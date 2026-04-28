@@ -4,14 +4,20 @@ import Hero from "@/components/Hero";
 import TalentShowcase from "@/components/TalentShowcase";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
+import LoginScreen from "@/components/onboarding/LoginScreen";
 
-type Phase = "welcome" | "onboarding" | "app";
+type Phase = "welcome" | "onboarding" | "login" | "app";
 
 const Index = () => {
   const [phase, setPhase] = useState<Phase>("welcome");
 
   if (phase === "welcome") {
-    return <WelcomeScreen onEnter={() => setPhase("onboarding")} />;
+    return (
+      <WelcomeScreen
+        onCreateAccount={() => setPhase("onboarding")}
+        onLogin={() => setPhase("login")}
+      />
+    );
   }
 
   if (phase === "onboarding") {
@@ -19,6 +25,16 @@ const Index = () => {
       <OnboardingFlow
         onComplete={() => setPhase("app")}
         onBack={() => setPhase("welcome")}
+      />
+    );
+  }
+
+  if (phase === "login") {
+    return (
+      <LoginScreen
+        onLogin={() => setPhase("app")}
+        onBack={() => setPhase("welcome")}
+        onCreateAccount={() => setPhase("onboarding")}
       />
     );
   }
