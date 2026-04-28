@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Header from "@/components/Header";
-import Hero from "@/components/Hero";
+import ServiceSearch from "@/components/ServiceSearch";
 import TalentShowcase from "@/components/TalentShowcase";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
@@ -44,7 +44,7 @@ const Index = () => {
       <Header />
       <main>
         <h1 className="sr-only">NOMA Digital Studio — Talent Showcase</h1>
-        <Hero />
+        <ServiceSearch />
         <TalentShowcase />
       </main>
     </div>
