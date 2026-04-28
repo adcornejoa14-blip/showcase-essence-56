@@ -15,14 +15,21 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
   const fieldClass =
     "w-full border-0 border-b border-foreground/15 bg-transparent px-0 py-2 text-sm font-light text-foreground placeholder:text-foreground/30 focus:border-foreground/60 focus:outline-none";
 
+  const VALID_USERS: { email: string; password: string }[] = [
+    { email: "santiagoguerragoes@gmail.com", password: "Goes2002" },
+  ];
+
   const handleSubmit = (ev: React.FormEvent) => {
     ev.preventDefault();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError("Email no válido.");
       return;
     }
-    if (password.length < 6) {
-      setError("Contraseña incorrecta.");
+    const match = VALID_USERS.find(
+      (u) => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password,
+    );
+    if (!match) {
+      setError("Email o contraseña incorrectos.");
       return;
     }
     setError(null);
