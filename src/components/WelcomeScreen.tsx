@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import logo from "@/assets/noma-logo-final.png";
 
 interface WelcomeScreenProps {
-  onEnter: () => void;
+  onCreateAccount: () => void;
+  onLogin: () => void;
 }
 
-const WelcomeScreen = ({ onEnter }: WelcomeScreenProps) => {
+const WelcomeScreen = ({ onCreateAccount, onLogin }: WelcomeScreenProps) => {
   const [loaded, setLoaded] = useState(false);
   const [exiting, setExiting] = useState(false);
 
@@ -14,9 +15,9 @@ const WelcomeScreen = ({ onEnter }: WelcomeScreenProps) => {
     return () => window.clearTimeout(t);
   }, []);
 
-  const handleEnter = () => {
+  const handle = (cb: () => void) => {
     setExiting(true);
-    window.setTimeout(() => onEnter(), 400);
+    window.setTimeout(cb, 400);
   };
 
   return (
@@ -34,16 +35,27 @@ const WelcomeScreen = ({ onEnter }: WelcomeScreenProps) => {
         }`}
       />
 
-      <button
-        type="button"
-        onClick={handleEnter}
-        className={`border border-foreground/20 px-10 py-3 text-sm font-light tracking-[0.2em] uppercase text-foreground/70 transition-all duration-700 ease-out hover:border-foreground/60 hover:text-foreground ${
+      <div
+        className={`flex flex-col items-center gap-3 transition-all duration-700 ease-out sm:flex-row sm:gap-4 ${
           loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
         }`}
         style={{ transitionDelay: loaded ? "300ms" : "0ms" }}
       >
-        Acceder
-      </button>
+        <button
+          type="button"
+          onClick={() => handle(onCreateAccount)}
+          className="w-60 border border-foreground/20 px-10 py-3 text-sm font-light tracking-[0.2em] uppercase text-foreground/70 transition-colors hover:border-foreground/60 hover:text-foreground sm:w-auto"
+        >
+          Crear cuenta
+        </button>
+        <button
+          type="button"
+          onClick={() => handle(onLogin)}
+          className="w-60 border border-foreground/20 px-10 py-3 text-sm font-light tracking-[0.2em] uppercase text-foreground/70 transition-colors hover:border-foreground/60 hover:text-foreground sm:w-auto"
+        >
+          Iniciar sesión
+        </button>
+      </div>
     </div>
   );
 };
