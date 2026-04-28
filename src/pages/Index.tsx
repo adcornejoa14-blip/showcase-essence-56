@@ -44,7 +44,7 @@ const Index = () => {
       <Header />
       <main>
         <h1 className="sr-only">NOMA Digital Studio — Talent Showcase</h1>
-        <Hero />
+        <ServiceSearch />
         <TalentShowcase />
       </main>
     </div>
