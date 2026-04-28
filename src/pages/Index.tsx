@@ -3,12 +3,24 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import TalentShowcase from "@/components/TalentShowcase";
 import WelcomeScreen from "@/components/WelcomeScreen";
+import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
+
+type Phase = "welcome" | "onboarding" | "app";
 
 const Index = () => {
-  const [entered, setEntered] = useState(false);
+  const [phase, setPhase] = useState<Phase>("welcome");
 
-  if (!entered) {
-    return <WelcomeScreen onEnter={() => setEntered(true)} />;
+  if (phase === "welcome") {
+    return <WelcomeScreen onEnter={() => setPhase("onboarding")} />;
+  }
+
+  if (phase === "onboarding") {
+    return (
+      <OnboardingFlow
+        onComplete={() => setPhase("app")}
+        onBack={() => setPhase("welcome")}
+      />
+    );
   }
 
   return (
