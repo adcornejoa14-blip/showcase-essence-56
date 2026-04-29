@@ -165,6 +165,18 @@ const WorldMap = () => {
                       r={isActive ? 9 : 7}
                       fill="hsl(var(--foreground) / 0.12)"
                     />
+                    {isActive && (
+                      <>
+                        <circle r={22} fill="hsl(var(--foreground) / 0.08)">
+                          <animate attributeName="r" values="14;28;14" dur="2.4s" repeatCount="indefinite" />
+                          <animate attributeName="opacity" values="0.35;0.05;0.35" dur="2.4s" repeatCount="indefinite" />
+                        </circle>
+                        <circle r={14} fill="hsl(var(--foreground) / 0.18)">
+                          <animate attributeName="r" values="9;16;9" dur="2.4s" repeatCount="indefinite" />
+                          <animate attributeName="opacity" values="0.6;0.15;0.6" dur="2.4s" repeatCount="indefinite" />
+                        </circle>
+                      </>
+                    )}
                     <circle
                       r={isActive ? 4 : 3}
                       fill="hsl(var(--foreground))"
