@@ -15,18 +15,18 @@ const GEO_URL =
 
 type Country = {
   code: string; // our internal code
-  iso: string; // ISO 3166-1 alpha-3 (matches topojson)
-  name: string;
+  geoName: string; // matches topojson "name" property
+  label: string;
   rating: number; // 1-5
   coords: [number, number]; // [lng, lat]
 };
 
 const COUNTRIES: Country[] = [
-  { code: "EC", iso: "ECU", name: "Ecuador", rating: 4.8, coords: [-78.5, -1.5] },
-  { code: "BR", iso: "BRA", name: "Brasil", rating: 4.9, coords: [-51.9, -14.2] },
+  { code: "EC", geoName: "Ecuador", label: "Ecuador", rating: 4.8, coords: [-78.5, -1.5] },
+  { code: "BR", geoName: "Brazil", label: "Brasil", rating: 4.9, coords: [-51.9, -14.2] },
 ];
 
-const ISO_AVAILABLE = new Set(COUNTRIES.map((c) => c.iso));
+const NAME_AVAILABLE = new Set(COUNTRIES.map((c) => c.geoName));
 
 const StarRow = ({ value }: { value: number }) => {
   const full = Math.floor(value);
@@ -61,13 +61,13 @@ const WorldMap = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const activeCountry = searchParams.get("country");
-  const [hoverIso, setHoverIso] = useState<string | null>(null);
+  const [hoverName, setHoverName] = useState<string | null>(null);
 
   const countriesWithCount = useMemo(() => {
     return COUNTRIES.map((c) => ({
       ...c,
       count: technicians.filter((t) =>
-        t.city.toLowerCase().includes(c.name.toLowerCase()),
+        t.city.toLowerCase().includes(c.label.toLowerCase()),
       ).length,
     }));
   }, []);
@@ -107,21 +107,18 @@ const WorldMap = () => {
               <Geographies geography={GEO_URL}>
                 {({ geographies }) =>
                   geographies.map((geo) => {
-                    // world-atlas uses numeric ISO; map to alpha-3 via properties
-                    const iso = (geo.properties as { "ISO_A3"?: string; iso_a3?: string }).ISO_A3
-                      || (geo.properties as { iso_a3?: string }).iso_a3
-                      || "";
-                    const isAvailable = ISO_AVAILABLE.has(iso);
-                    const matchedCode = COUNTRIES.find((c) => c.iso === iso)?.code;
+                    const name = (geo.properties as { name?: string }).name || "";
+                    const isAvailable = NAME_AVAILABLE.has(name);
+                    const matchedCode = COUNTRIES.find((c) => c.geoName === name)?.code;
                     const isActive = matchedCode && activeCountry === matchedCode;
-                    const isHover = hoverIso === iso;
+                    const isHover = hoverName === name;
 
                     return (
                       <Geography
                         key={geo.rsmKey}
                         geography={geo}
-                        onMouseEnter={() => isAvailable && setHoverIso(iso)}
-                        onMouseLeave={() => setHoverIso(null)}
+                        onMouseEnter={() => isAvailable && setHoverName(name)}
+                        onMouseLeave={() => setHoverName(null)}
                         onClick={() => {
                           if (isAvailable && matchedCode) {
                             selectCountry(isActive ? null : matchedCode);
