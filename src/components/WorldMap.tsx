@@ -183,7 +183,7 @@ const WorldMap = () => {
                         fill: "hsl(var(--foreground))",
                       }}
                     >
-                      {c.name}
+                      {c.label}
                     </text>
                   </Marker>
                 );
@@ -211,7 +211,7 @@ const WorldMap = () => {
                   <p className="text-[10px] font-light uppercase tracking-[0.2em] text-foreground/40">
                     {c.code}
                   </p>
-                  <p className="mt-1 text-base font-light text-foreground">{c.name}</p>
+                  <p className="mt-1 text-base font-light text-foreground">{c.label}</p>
                   <p className="mt-1 text-xs font-light text-foreground/50">
                     {c.count} {c.count === 1 ? "técnico" : "técnicos"}
                   </p>
