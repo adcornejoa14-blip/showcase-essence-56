@@ -1,21 +1,32 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Star } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  Marker,
+  ZoomableGroup,
+} from "react-simple-maps";
 import { technicians } from "@/data/technicians";
 
+const GEO_URL =
+  "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+
 type Country = {
-  code: string;
-  name: string;
+  code: string; // our internal code
+  geoName: string; // matches topojson "name" property
+  label: string;
   rating: number; // 1-5
-  // Coordinates in the SVG viewBox 1000x500 (equirectangular-ish)
-  cx: number;
-  cy: number;
+  coords: [number, number]; // [lng, lat]
 };
 
 const COUNTRIES: Country[] = [
-  { code: "EC", name: "Ecuador", rating: 4.8, cx: 280, cy: 295 },
-  { code: "BR", name: "Brasil", rating: 4.9, cx: 360, cy: 330 },
+  { code: "EC", geoName: "Ecuador", label: "Ecuador", rating: 4.8, coords: [-78.5, -1.5] },
+  { code: "BR", geoName: "Brazil", label: "Brasil", rating: 4.9, coords: [-51.9, -14.2] },
 ];
+
+const NAME_AVAILABLE = new Set(COUNTRIES.map((c) => c.geoName));
 
 const StarRow = ({ value }: { value: number }) => {
   const full = Math.floor(value);
@@ -27,19 +38,13 @@ const StarRow = ({ value }: { value: number }) => {
         const isHalf = i === full && half;
         return (
           <div key={i} className="relative h-3 w-3">
-            <Star
-              strokeWidth={1}
-              className="absolute inset-0 h-3 w-3 text-foreground/30"
-            />
+            <Star strokeWidth={1} className="absolute inset-0 h-3 w-3 text-foreground/25" />
             {(isFull || isHalf) && (
               <div
                 className="absolute inset-0 overflow-hidden"
                 style={{ width: isHalf ? "50%" : "100%" }}
               >
-                <Star
-                  strokeWidth={1}
-                  className="h-3 w-3 fill-foreground text-foreground"
-                />
+                <Star strokeWidth={1} className="h-3 w-3 fill-foreground text-foreground" />
               </div>
             )}
           </div>
@@ -56,12 +61,13 @@ const WorldMap = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const activeCountry = searchParams.get("country");
+  const [hoverName, setHoverName] = useState<string | null>(null);
 
   const countriesWithCount = useMemo(() => {
     return COUNTRIES.map((c) => ({
       ...c,
       count: technicians.filter((t) =>
-        t.city.toLowerCase().includes(c.name.toLowerCase()),
+        t.city.toLowerCase().includes(c.label.toLowerCase()),
       ).length,
     }));
   }, []);
@@ -89,133 +95,144 @@ const WorldMap = () => {
           </p>
         </div>
 
-        <div className="relative w-full">
-          <svg
-            viewBox="0 0 1000 500"
-            className="h-auto w-full"
-            role="img"
-            aria-label="Mapa del mundo"
+        <div className="relative w-full overflow-hidden border border-foreground/10 bg-foreground/[0.015]">
+          <ComposableMap
+            projection="geoEqualEarth"
+            projectionConfig={{ scale: 165 }}
+            width={980}
+            height={500}
+            style={{ width: "100%", height: "auto" }}
           >
-            {/* Ocean background */}
-            <rect width="1000" height="500" fill="hsl(var(--background))" />
+            <ZoomableGroup center={[-30, -10]} zoom={1.1} maxZoom={1.1} minZoom={1.1}>
+              <Geographies geography={GEO_URL}>
+                {({ geographies }) =>
+                  geographies.map((geo) => {
+                    const name = (geo.properties as { name?: string }).name || "";
+                    const isAvailable = NAME_AVAILABLE.has(name);
+                    const matchedCode = COUNTRIES.find((c) => c.geoName === name)?.code;
+                    const isActive = matchedCode && activeCountry === matchedCode;
+                    const isHover = hoverName === name;
 
-            {/* Simplified continents — abstract silhouettes */}
-            <g
-              fill="hsl(var(--foreground) / 0.08)"
-              stroke="hsl(var(--foreground) / 0.25)"
-              strokeWidth="0.6"
-            >
-              {/* North America */}
-              <path d="M120,110 L210,95 L260,110 L295,135 L305,175 L280,210 L240,225 L210,215 L180,235 L160,225 L140,200 L125,170 Z" />
-              {/* Central America */}
-              <path d="M240,235 L270,245 L285,265 L275,280 L255,275 L240,255 Z" />
-              {/* South America */}
-              <path d="M285,275 L320,275 L360,295 L380,335 L370,395 L335,430 L305,420 L295,380 L280,340 L275,305 Z" />
-              {/* Greenland */}
-              <path d="M340,75 L385,70 L405,90 L395,115 L365,120 L340,105 Z" />
-              {/* Europe */}
-              <path d="M460,115 L520,110 L555,125 L560,150 L540,170 L505,170 L475,160 L460,140 Z" />
-              {/* Africa */}
-              <path d="M475,185 L545,180 L585,205 L595,255 L575,310 L545,345 L515,340 L490,300 L475,250 Z" />
-              {/* Middle East / West Asia */}
-              <path d="M555,165 L615,160 L640,180 L630,210 L595,215 L560,200 Z" />
-              {/* Asia */}
-              <path d="M615,115 L730,105 L820,120 L860,145 L865,180 L830,205 L780,210 L730,200 L685,195 L645,180 L620,155 Z" />
-              {/* Southeast Asia / India */}
-              <path d="M685,205 L730,215 L745,250 L725,275 L695,265 L675,235 Z" />
-              {/* Indonesia / Philippines (cluster of small islands) */}
-              <path d="M790,260 L820,255 L835,270 L815,285 L790,278 Z" />
-              <path d="M845,240 L865,238 L870,255 L850,260 Z" />
-              {/* Australia */}
-              <path d="M820,335 L880,325 L905,345 L895,380 L855,390 L820,375 Z" />
-              {/* New Zealand */}
-              <path d="M915,395 L935,390 L940,410 L920,415 Z" />
-              {/* Japan */}
-              <path d="M870,150 L885,145 L890,170 L875,178 Z" />
-              {/* British Isles */}
-              <path d="M450,125 L465,123 L468,142 L452,145 Z" />
-              {/* Madagascar */}
-              <path d="M610,305 L620,300 L625,330 L613,335 Z" />
-              {/* Iceland */}
-              <path d="M425,90 L445,88 L448,102 L428,105 Z" />
-            </g>
+                    return (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        onMouseEnter={() => isAvailable && setHoverName(name)}
+                        onMouseLeave={() => setHoverName(null)}
+                        onClick={() => {
+                          if (isAvailable && matchedCode) {
+                            selectCountry(isActive ? null : matchedCode);
+                          }
+                        }}
+                        style={{
+                          default: {
+                            fill: isActive
+                              ? "hsl(var(--foreground) / 0.55)"
+                              : isAvailable
+                                ? isHover
+                                  ? "hsl(var(--foreground) / 0.35)"
+                                  : "hsl(var(--foreground) / 0.18)"
+                                : "hsl(var(--foreground) / 0.06)",
+                            stroke: "hsl(var(--background))",
+                            strokeWidth: 0.4,
+                            outline: "none",
+                            cursor: isAvailable ? "pointer" : "default",
+                            transition: "fill 200ms ease",
+                          },
+                          hover: { outline: "none" },
+                          pressed: { outline: "none" },
+                        }}
+                      />
+                    );
+                  })
+                }
+              </Geographies>
 
-            {/* Pins for available countries */}
-            {countriesWithCount.map((c) => {
-              const isActive = activeCountry === c.code;
-              return (
-                <g
-                  key={c.code}
-                  onClick={() => selectCountry(isActive ? null : c.code)}
-                  className="cursor-pointer"
-                  style={{ transformOrigin: `${c.cx}px ${c.cy}px` }}
-                >
-                  {/* Pulse ring */}
-                  <circle
-                    cx={c.cx}
-                    cy={c.cy}
-                    r={isActive ? 18 : 14}
-                    fill="hsl(var(--foreground) / 0.08)"
-                    className="transition-all duration-300"
-                  />
-                  <circle
-                    cx={c.cx}
-                    cy={c.cy}
-                    r={isActive ? 7 : 5}
-                    fill="hsl(var(--foreground))"
-                    stroke="hsl(var(--background))"
-                    strokeWidth="1.5"
-                    className="transition-all duration-300"
-                  />
-                </g>
-              );
-            })}
-          </svg>
-
-          {/* Country cards (rendered as HTML overlays for crisp text) */}
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {countriesWithCount.map((c) => {
-              const isActive = activeCountry === c.code;
-              return (
-                <button
-                  key={c.code}
-                  type="button"
-                  onClick={() => selectCountry(isActive ? null : c.code)}
-                  className={`group flex items-center justify-between border px-5 py-4 text-left transition-colors ${
-                    isActive
-                      ? "border-foreground/60 bg-foreground/5"
-                      : "border-foreground/15 hover:border-foreground/40"
-                  }`}
-                >
-                  <div>
-                    <p className="text-[10px] font-light uppercase tracking-[0.2em] text-foreground/40">
-                      {c.code}
-                    </p>
-                    <p className="mt-1 text-base font-light text-foreground">
-                      {c.name}
-                    </p>
-                    <p className="mt-1 text-xs font-light text-foreground/50">
-                      {c.count} {c.count === 1 ? "técnico" : "técnicos"}
-                    </p>
-                  </div>
-                  <StarRow value={c.rating} />
-                </button>
-              );
-            })}
-          </div>
-
-          {activeCountry && (
-            <div className="mt-4 flex justify-center">
-              <button
-                type="button"
-                onClick={() => selectCountry(null)}
-                className="text-xs font-light tracking-wide text-foreground/40 underline-offset-4 hover:text-foreground/70 hover:underline"
-              >
-                Quitar filtro de país
-              </button>
-            </div>
-          )}
+              {countriesWithCount.map((c) => {
+                const isActive = activeCountry === c.code;
+                return (
+                  <Marker
+                    key={c.code}
+                    coordinates={c.coords}
+                    onClick={() => selectCountry(isActive ? null : c.code)}
+                    style={{
+                      default: { cursor: "pointer" },
+                      hover: { cursor: "pointer" },
+                      pressed: { cursor: "pointer" },
+                    }}
+                  >
+                    <circle
+                      r={isActive ? 9 : 7}
+                      fill="hsl(var(--foreground) / 0.12)"
+                    />
+                    <circle
+                      r={isActive ? 4 : 3}
+                      fill="hsl(var(--foreground))"
+                      stroke="hsl(var(--background))"
+                      strokeWidth={1}
+                    />
+                    <text
+                      textAnchor="middle"
+                      y={-12}
+                      style={{
+                        fontFamily: "inherit",
+                        fontSize: 9,
+                        fontWeight: 300,
+                        letterSpacing: "0.15em",
+                        textTransform: "uppercase",
+                        fill: "hsl(var(--foreground))",
+                      }}
+                    >
+                      {c.label}
+                    </text>
+                  </Marker>
+                );
+              })}
+            </ZoomableGroup>
+          </ComposableMap>
         </div>
+
+        {/* Country cards */}
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {countriesWithCount.map((c) => {
+            const isActive = activeCountry === c.code;
+            return (
+              <button
+                key={c.code}
+                type="button"
+                onClick={() => selectCountry(isActive ? null : c.code)}
+                className={`group flex items-center justify-between border px-5 py-4 text-left transition-colors ${
+                  isActive
+                    ? "border-foreground/60 bg-foreground/5"
+                    : "border-foreground/15 hover:border-foreground/40"
+                }`}
+              >
+                <div>
+                  <p className="text-[10px] font-light uppercase tracking-[0.2em] text-foreground/40">
+                    {c.code}
+                  </p>
+                  <p className="mt-1 text-base font-light text-foreground">{c.label}</p>
+                  <p className="mt-1 text-xs font-light text-foreground/50">
+                    {c.count} {c.count === 1 ? "técnico" : "técnicos"}
+                  </p>
+                </div>
+                <StarRow value={c.rating} />
+              </button>
+            );
+          })}
+        </div>
+
+        {activeCountry && (
+          <div className="mt-4 flex justify-center">
+            <button
+              type="button"
+              onClick={() => selectCountry(null)}
+              className="text-xs font-light tracking-wide text-foreground/40 underline-offset-4 hover:text-foreground/70 hover:underline"
+            >
+              Quitar filtro de país
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
