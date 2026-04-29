@@ -6,16 +6,13 @@ import GalleryItem from "@/components/GalleryItem";
 const TalentShowcase = () => {
   const [searchParams] = useSearchParams();
   const activeService = searchParams.get("service");
-  const activeCountry = searchParams.get("country");
 
   const filtered = useMemo(() => {
     return technicians.filter((t) => {
       if (activeService && !t.services.includes(activeService)) return false;
-      if (activeCountry === "EC" && !t.city.toLowerCase().includes("ecuador")) return false;
-      if (activeCountry === "BR" && !t.city.toLowerCase().includes("brasil")) return false;
       return true;
     });
-  }, [activeService, activeCountry]);
+  }, [activeService]);
 
   return (
     <section aria-label="Talent Showcase" className="w-full">
