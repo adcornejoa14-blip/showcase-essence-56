@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import ServiceSearch from "@/components/ServiceSearch";
 import WorldMap from "@/components/WorldMap";
@@ -9,8 +9,22 @@ import LoginScreen from "@/components/onboarding/LoginScreen";
 
 type Phase = "welcome" | "onboarding" | "login" | "app";
 
+const PHASE_KEY = "noma:phase";
+
 const Index = () => {
-  const [phase, setPhase] = useState<Phase>("welcome");
+  const [phase, setPhase] = useState<Phase>(() => {
+    if (typeof window === "undefined") return "welcome";
+    const saved = window.localStorage.getItem(PHASE_KEY) as Phase | null;
+    return saved ?? "welcome";
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(PHASE_KEY, phase);
+    } catch {
+      // ignore
+    }
+  }, [phase]);
 
   if (phase === "welcome") {
     return (
