@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { SERVICE_CATEGORIES, services } from "@/data/services";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
