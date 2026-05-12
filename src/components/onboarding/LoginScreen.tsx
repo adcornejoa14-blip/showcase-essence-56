@@ -21,7 +21,7 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
     ev.preventDefault();
     setError(null);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Email no válido.");
+      setError("Invalid email.");
       return;
     }
     setLoading(true);
@@ -31,7 +31,7 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
     });
     setLoading(false);
     if (signInError) {
-      setError("Email o contraseña incorrectos.");
+      setError("Incorrect email or password.");
       return;
     }
     onLogin();
@@ -42,10 +42,10 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
       <img src={logo} alt="NOMA" className="mb-12 w-40 select-none" draggable={false} />
 
       <h2 className="text-2xl font-light tracking-tight text-foreground md:text-3xl">
-        Iniciar sesión
+        Sign in
       </h2>
       <p className="mt-3 text-sm font-light text-foreground/50">
-        Accede con tu cuenta de NOMA Digital Studio.
+        Access your NOMA Digital Studio account.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-12 w-full space-y-8" noValidate>
@@ -56,21 +56,21 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className={fieldClass}
-            placeholder="tu@email.com"
+            placeholder="you@email.com"
             autoFocus
           />
         </div>
 
         <div>
           <label className="text-xs font-light tracking-wide text-foreground/50">
-            Contraseña
+            Password
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={fieldClass}
-            placeholder="Tu contraseña"
+            placeholder="Your password"
           />
         </div>
 
@@ -81,7 +81,7 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
           disabled={loading}
           className="w-full border border-foreground/20 px-10 py-3 text-sm font-light tracking-[0.2em] uppercase text-foreground/70 transition-colors hover:border-foreground/60 hover:text-foreground disabled:opacity-40"
         >
-          {loading ? "Entrando..." : "Entrar"}
+          {loading ? "Signing in..." : "Sign in"}
         </button>
       </form>
 
@@ -91,14 +91,14 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
           onClick={onBack}
           className="text-xs font-light tracking-[0.2em] uppercase text-foreground/40 hover:text-foreground/70"
         >
-          Atrás
+          Back
         </button>
         <button
           type="button"
           onClick={onCreateAccount}
           className="text-xs font-light tracking-wide text-foreground/40 hover:text-foreground/70"
         >
-          ¿No tienes cuenta? <span className="underline">Crear cuenta</span>
+          No account? <span className="underline">Create one</span>
         </button>
       </div>
     </div>

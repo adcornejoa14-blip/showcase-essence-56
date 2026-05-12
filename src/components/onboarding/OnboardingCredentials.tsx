@@ -21,11 +21,11 @@ const OnboardingCredentials = ({ onCreated, onBack }: Props) => {
     setError(null);
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Email no válido.");
+      setError("Invalid email.");
       return;
     }
     if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+      setError("Password must be at least 6 characters.");
       return;
     }
 
@@ -49,10 +49,10 @@ const OnboardingCredentials = ({ onCreated, onBack }: Props) => {
       <img src={logo} alt="NOMA" className="mb-12 w-40 select-none" draggable={false} />
 
       <h2 className="text-2xl font-light tracking-tight text-foreground md:text-3xl">
-        Crea tu cuenta
+        Create your account
       </h2>
       <p className="mt-3 text-sm font-light text-foreground/50">
-        Último paso para acceder a NOMA Digital Studio.
+        Last step to access NOMA Digital Studio.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-12 w-full space-y-8" noValidate>
@@ -63,21 +63,21 @@ const OnboardingCredentials = ({ onCreated, onBack }: Props) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className={fieldClass}
-            placeholder="tu@email.com"
+            placeholder="you@email.com"
             autoFocus
           />
         </div>
 
         <div>
           <label className="text-xs font-light tracking-wide text-foreground/50">
-            Contraseña
+            Password
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={fieldClass}
-            placeholder="Mínimo 6 caracteres"
+            placeholder="At least 6 characters"
           />
         </div>
 
@@ -88,7 +88,7 @@ const OnboardingCredentials = ({ onCreated, onBack }: Props) => {
           disabled={loading}
           className="w-full border border-foreground/20 px-10 py-3 text-sm font-light tracking-[0.2em] uppercase text-foreground/70 transition-colors hover:border-foreground/60 hover:text-foreground disabled:opacity-40"
         >
-          {loading ? "Creando..." : "Crear cuenta"}
+          {loading ? "Creating..." : "Create account"}
         </button>
       </form>
 
@@ -98,7 +98,7 @@ const OnboardingCredentials = ({ onCreated, onBack }: Props) => {
           onClick={onBack}
           className="text-xs font-light tracking-[0.2em] uppercase text-foreground/40 hover:text-foreground/70"
         >
-          Atrás
+          Back
         </button>
       </div>
     </div>
