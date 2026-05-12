@@ -9,10 +9,10 @@ const OnboardingRoleStep = ({ onSelect, onBack }: Props) => {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col items-center justify-center px-6 py-16 animate-fade-in">
       <h2 className="text-2xl font-light tracking-tight text-foreground md:text-3xl">
-        ¿Cómo te unes?
+        How are you joining?
       </h2>
       <p className="mt-3 text-sm font-light text-foreground/50">
-        Elige el perfil que mejor te describe.
+        Choose the profile that best describes you.
       </p>
 
       <div className="mt-12 grid w-full gap-4 md:grid-cols-2">
@@ -22,13 +22,13 @@ const OnboardingRoleStep = ({ onSelect, onBack }: Props) => {
           className="group flex flex-col items-start gap-3 border border-foreground/15 p-8 text-left transition-colors hover:border-foreground/50 hover:bg-foreground/5"
         >
           <span className="text-xs font-light tracking-[0.2em] uppercase text-foreground/40">
-            Dentista
+            Dentist
           </span>
           <span className="text-lg font-light text-foreground">
-            Soy dentista y busco técnicos
+            I'm a dentist looking for technicians
           </span>
           <span className="text-xs font-light text-foreground/50">
-            Encuentra técnicos dentales digitales para tus casos.
+            Find digital dental technicians for your cases.
           </span>
         </button>
 
@@ -38,13 +38,13 @@ const OnboardingRoleStep = ({ onSelect, onBack }: Props) => {
           className="group flex flex-col items-start gap-3 border border-foreground/15 p-8 text-left transition-colors hover:border-foreground/50 hover:bg-foreground/5"
         >
           <span className="text-xs font-light tracking-[0.2em] uppercase text-foreground/40">
-            Técnico
+            Technician
           </span>
           <span className="text-lg font-light text-foreground">
-            Soy técnico dental
+            I'm a dental technician
           </span>
           <span className="text-xs font-light text-foreground/50">
-            Muestra tu trabajo y conecta con dentistas.
+            Showcase your work and connect with dentists.
           </span>
         </button>
       </div>
@@ -54,7 +54,7 @@ const OnboardingRoleStep = ({ onSelect, onBack }: Props) => {
         onClick={onBack}
         className="mt-12 text-xs font-light tracking-[0.2em] uppercase text-foreground/40 hover:text-foreground/70"
       >
-        Atrás
+        Back
       </button>
     </div>
   );

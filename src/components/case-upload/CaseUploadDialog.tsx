@@ -70,10 +70,10 @@ const flattenCart = (cart: CartItem[]): CaseFormData[] => {
   const out: CaseFormData[] = [];
   for (const item of cart) {
     if (isPerToothService(item.service.slug)) {
-      // Una sola ficha agrupando todas las piezas
+      // Single form grouping all teeth
       out.push(newCase(item.service, 1, item.quantity));
     } else {
-      // Una ficha por unidad (paciente distinto)
+      // One form per unit (different patient)
       for (let i = 0; i < item.quantity; i++) {
         out.push(newCase(item.service, i + 1, 1));
       }
@@ -109,7 +109,7 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
 export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmitted }: Props) => {
   const [cases, setCases] = useState<CaseFormData[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
-  const today = new Date().toLocaleDateString("es-ES");
+  const today = new Date().toLocaleDateString("en-US");
 
   useEffect(() => {
     if (open) {
@@ -129,7 +129,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
 
   const handleSubmit = () => {
     if (!allValid) return;
-    toast.success(`${totalCases} ficha${totalCases === 1 ? "" : "s"} enviada${totalCases === 1 ? "" : "s"} (demo)`);
+    toast.success(`${totalCases} case${totalCases === 1 ? "" : "s"} submitted (demo)`);
     onSubmitted?.();
     onOpenChange(false);
   };
@@ -150,15 +150,15 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
         <div className="flex max-h-[90vh] flex-col">
           <DialogHeader className="border-b border-border px-6 py-4">
             <DialogTitle className="font-light">
-              Solicitar {totalCases} ficha{totalCases === 1 ? "" : "s"}
+              Request {totalCases} case{totalCases === 1 ? "" : "s"}
             </DialogTitle>
             <DialogDescription className="font-light">
-              A {technician.name} · {technician.city} — {completedCount} de {totalCases} completos
+              To {technician.name} · {technician.city} — {completedCount} of {totalCases} complete
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid flex-1 overflow-hidden md:grid-cols-[220px_1fr]">
-            {/* Sidebar de casos */}
+            {/* Case sidebar */}
             <nav className="overflow-y-auto border-b border-border bg-muted/20 md:border-b-0 md:border-r">
               <ul className="flex md:block">
                 {cases.map((c, i) => {
@@ -179,7 +179,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                           {c.service.name}{" "}
                           <span className="text-foreground/40">
                             {isPerToothService(c.service.slug)
-                              ? `· ${c.toothCount} pieza${c.toothCount === 1 ? "" : "s"}`
+                              ? `· ${c.toothCount} tooth${c.toothCount === 1 ? "" : "s"}`
                               : `#${c.indexInService}`}
                           </span>
                         </span>
@@ -191,35 +191,35 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
               </ul>
             </nav>
 
-            {/* Formulario del caso activo */}
+            {/* Active case form */}
             <div className="overflow-y-auto px-6 py-6">
               <div className="mb-6">
                 <p className="text-xs font-light uppercase tracking-[0.2em] text-foreground/50">
                   {active.service.name}
                   {isPerToothService(active.service.slug)
-                    ? ` · ${active.toothCount} pieza${active.toothCount === 1 ? "" : "s"}`
-                    : ` · Caso #${active.indexInService}`}
+                    ? ` · ${active.toothCount} tooth${active.toothCount === 1 ? "" : "s"}`
+                    : ` · Case #${active.indexInService}`}
                 </p>
               </div>
 
               <div className="space-y-8">
-                {/* Paciente */}
+                {/* Patient */}
                 <section className="space-y-4">
-                  <SectionTitle>Paciente</SectionTitle>
+                  <SectionTitle>Patient</SectionTitle>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <label className="text-sm font-light text-foreground/80">
-                        Nombre completo del paciente <span className="text-foreground/80">*</span>
+                        Patient full name <span className="text-foreground/80">*</span>
                       </label>
                       <Input
                         value={active.patientName}
                         onChange={(e) => updateActive({ patientName: e.target.value })}
-                        placeholder="Nombre y apellidos"
+                        placeholder="First and last name"
                         maxLength={120}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-light text-foreground/80">Fecha</label>
+                      <label className="text-sm font-light text-foreground/80">Date</label>
                       <Input value={today} readOnly className="bg-muted/30" />
                     </div>
                   </div>
@@ -227,7 +227,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                   {isPerToothService(active.service.slug) && (
                     <div className="space-y-2">
                       <label className="text-sm font-light text-foreground/80">
-                        Selecciona las {active.toothCount} pieza{active.toothCount === 1 ? "" : "s"} a tratar{" "}
+                        Select the {active.toothCount} tooth{active.toothCount === 1 ? "" : "s"} to treat{" "}
                         <span className="text-foreground/80">*</span>
                       </label>
                       <ToothSelector
@@ -239,12 +239,12 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                   )}
                 </section>
 
-                {/* Fotos extraorales */}
+                {/* Extraoral photos */}
                 <section className="space-y-4">
-                  <SectionTitle>Fotos extraorales</SectionTitle>
+                  <SectionTitle>Extraoral photos</SectionTitle>
                   <div className="grid gap-4 md:grid-cols-3">
                     <FileDropzone
-                      label="Sonrisa en reposo"
+                      label="Smile at rest"
                       required
                       accept="image/*"
                       previewType="image"
@@ -252,7 +252,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                       onChange={(files) => updateActive({ extraoralRest: files })}
                     />
                     <FileDropzone
-                      label="Sonrisa natural"
+                      label="Natural smile"
                       required
                       accept="image/*"
                       previewType="image"
@@ -260,7 +260,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                       onChange={(files) => updateActive({ extraoralNatural: files })}
                     />
                     <FileDropzone
-                      label="Sonrisa máxima"
+                      label="Maximum smile"
                       required
                       accept="image/*"
                       previewType="image"
@@ -270,12 +270,12 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                   </div>
                 </section>
 
-                {/* Fotos intraorales */}
+                {/* Intraoral photos */}
                 <section className="space-y-4">
-                  <SectionTitle>Fotos intraorales</SectionTitle>
+                  <SectionTitle>Intraoral photos</SectionTitle>
                   <div className="grid gap-4 md:grid-cols-2">
                     <FileDropzone
-                      label="Vista frontal anterior"
+                      label="Anterior frontal view"
                       required
                       accept="image/*"
                       previewType="image"
@@ -285,12 +285,12 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                   </div>
                 </section>
 
-                {/* Archivos digitales */}
+                {/* Digital files */}
                 <section className="space-y-4">
-                  <SectionTitle>Archivos digitales (STL)</SectionTitle>
+                  <SectionTitle>Digital files (STL)</SectionTitle>
                   <div className="grid gap-4 md:grid-cols-3">
                     <FileDropzone
-                      label="STL maxilar superior"
+                      label="Upper jaw STL"
                       required
                       accept=".stl,.ply"
                       previewType="file"
@@ -298,7 +298,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                       onChange={(files) => updateActive({ stlUpper: files })}
                     />
                     <FileDropzone
-                      label="STL mandíbula"
+                      label="Lower jaw STL"
                       required
                       accept=".stl,.ply"
                       previewType="file"
@@ -306,7 +306,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                       onChange={(files) => updateActive({ stlLower: files })}
                     />
                     <FileDropzone
-                      label="STL de mordida"
+                      label="Bite STL"
                       required
                       accept=".stl,.ply"
                       previewType="file"
@@ -318,9 +318,9 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
 
                 {isImplant && (
                   <section className="space-y-4">
-                    <SectionTitle>Tomografía</SectionTitle>
+                    <SectionTitle>CT scan</SectionTitle>
                     <FileDropzone
-                      label="CBCT (DICOM, .zip recomendado)"
+                      label="CBCT (DICOM, .zip recommended)"
                       required
                       accept=".zip,.dcm"
                       multiple
@@ -332,11 +332,11 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                 )}
 
                 <section className="space-y-4">
-                  <SectionTitle>Notas adicionales</SectionTitle>
+                  <SectionTitle>Additional notes</SectionTitle>
                   <Textarea
                     value={active.notes}
                     onChange={(e) => updateActive({ notes: e.target.value })}
-                    placeholder="Indicaciones, color objetivo, referencias, etc."
+                    placeholder="Instructions, target shade, references, etc."
                     rows={4}
                     maxLength={1000}
                   />
@@ -353,7 +353,7 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                   onClick={() => setActiveIdx((i) => Math.max(0, i - 1))}
                   className="underline-offset-2 hover:underline"
                 >
-                  ← Anterior
+                  ← Previous
                 </button>
               )}
               {activeIdx < totalCases - 1 && (
@@ -362,15 +362,15 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
                   onClick={() => setActiveIdx((i) => Math.min(totalCases - 1, i + 1))}
                   className="underline-offset-2 hover:underline"
                 >
-                  Siguiente →
+                  Next →
                 </button>
               )}
             </div>
             <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
+              Cancel
             </Button>
             <Button onClick={handleSubmit} disabled={!allValid}>
-              Enviar {totalCases} ficha{totalCases === 1 ? "" : "s"}
+              Submit {totalCases} case{totalCases === 1 ? "" : "s"}
             </Button>
           </DialogFooter>
         </div>

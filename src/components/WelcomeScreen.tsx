@@ -46,14 +46,14 @@ const WelcomeScreen = ({ onCreateAccount, onLogin }: WelcomeScreenProps) => {
           onClick={() => handle(onCreateAccount)}
           className="w-60 border border-foreground/20 px-10 py-3 text-sm font-light tracking-[0.2em] uppercase text-foreground/70 transition-colors hover:border-foreground/60 hover:text-foreground sm:w-auto"
         >
-          Crear cuenta
+          Create account
         </button>
         <button
           type="button"
           onClick={() => handle(onLogin)}
           className="w-60 border border-foreground/20 px-10 py-3 text-sm font-light tracking-[0.2em] uppercase text-foreground/70 transition-colors hover:border-foreground/60 hover:text-foreground sm:w-auto"
         >
-          Iniciar sesión
+          Sign in
         </button>
       </div>
     </div>

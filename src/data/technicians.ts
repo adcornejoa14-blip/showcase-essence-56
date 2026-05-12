@@ -41,29 +41,29 @@ export type Technician = TechnicianInfo & {
 const SANTIAGO: TechnicianInfo = {
   slug: "santiago-guerra",
   name: "Santiago Guerra",
-  specialty: "Técnico Dental",
+  specialty: "Dental Technician",
   city: "Guayaquil, Ecuador",
   services: ["cadcam-veneers", "cadcam-crown-anterior", "wax-up", "inlays", "overlays"],
 };
 const RAUL: TechnicianInfo = {
   slug: "raul-guerra",
   name: "Raúl Guerra",
-  specialty: "Técnico Dental",
+  specialty: "Dental Technician",
   city: "Guayaquil, Ecuador",
   services: ["mockup-dsd", "wax-up", "onlays", "surgical-guide-crown"],
 };
 const RICARDO: TechnicianInfo = {
   slug: "ricardo-malise",
   name: "Ricardo Malise",
-  specialty: "Técnico Dental",
-  city: "Praia Brava, Brasil",
+  specialty: "Dental Technician",
+  city: "Praia Brava, Brazil",
   services: ["cadcam-veneers", "cadcam-crown-anterior", "mockup-dsd", "surgical-guide", "surgical-guide-crown"],
 };
 const LUIZ: TechnicianInfo = {
   slug: "luiz-varelas",
   name: "Luiz Varelas",
-  specialty: "Técnico Dental",
-  city: "Praia Brava, Brasil",
+  specialty: "Dental Technician",
+  city: "Praia Brava, Brazil",
   services: ["wax-up", "inlays", "onlays", "overlays", "surgical-guide"],
 };
 

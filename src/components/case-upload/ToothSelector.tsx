@@ -12,22 +12,22 @@ const LOWER_LEFT = ["31", "32", "33", "34", "35", "36", "37", "38"];
 const LOWER_RIGHT = ["48", "47", "46", "45", "44", "43", "42", "41"];
 
 const TOOTH_NAMES: Record<string, string> = {
-  "11": "Incisivo central sup. der.", "12": "Incisivo lateral sup. der.",
-  "13": "Canino sup. der.", "14": "1er premolar sup. der.",
-  "15": "2º premolar sup. der.", "16": "1er molar sup. der.",
-  "17": "2º molar sup. der.", "18": "3er molar sup. der.",
-  "21": "Incisivo central sup. izq.", "22": "Incisivo lateral sup. izq.",
-  "23": "Canino sup. izq.", "24": "1er premolar sup. izq.",
-  "25": "2º premolar sup. izq.", "26": "1er molar sup. izq.",
-  "27": "2º molar sup. izq.", "28": "3er molar sup. izq.",
-  "31": "Incisivo central inf. izq.", "32": "Incisivo lateral inf. izq.",
-  "33": "Canino inf. izq.", "34": "1er premolar inf. izq.",
-  "35": "2º premolar inf. izq.", "36": "1er molar inf. izq.",
-  "37": "2º molar inf. izq.", "38": "3er molar inf. izq.",
-  "41": "Incisivo central inf. der.", "42": "Incisivo lateral inf. der.",
-  "43": "Canino inf. der.", "44": "1er premolar inf. der.",
-  "45": "2º premolar inf. der.", "46": "1er molar inf. der.",
-  "47": "2º molar inf. der.", "48": "3er molar inf. der.",
+  "11": "Upper right central incisor", "12": "Upper right lateral incisor",
+  "13": "Upper right canine", "14": "Upper right 1st premolar",
+  "15": "Upper right 2nd premolar", "16": "Upper right 1st molar",
+  "17": "Upper right 2nd molar", "18": "Upper right 3rd molar",
+  "21": "Upper left central incisor", "22": "Upper left lateral incisor",
+  "23": "Upper left canine", "24": "Upper left 1st premolar",
+  "25": "Upper left 2nd premolar", "26": "Upper left 1st molar",
+  "27": "Upper left 2nd molar", "28": "Upper left 3rd molar",
+  "31": "Lower left central incisor", "32": "Lower left lateral incisor",
+  "33": "Lower left canine", "34": "Lower left 1st premolar",
+  "35": "Lower left 2nd premolar", "36": "Lower left 1st molar",
+  "37": "Lower left 2nd molar", "38": "Lower left 3rd molar",
+  "41": "Lower right central incisor", "42": "Lower right lateral incisor",
+  "43": "Lower right canine", "44": "Lower right 1st premolar",
+  "45": "Lower right 2nd premolar", "46": "Lower right 1st molar",
+  "47": "Lower right 2nd molar", "48": "Lower right 3rd molar",
 };
 
 export const ToothSelector = ({ value, onChange, maxCount }: Props) => {
@@ -55,7 +55,7 @@ export const ToothSelector = ({ value, onChange, maxCount }: Props) => {
                 : "border-border bg-muted/20 text-foreground/50 hover:border-foreground/40 hover:text-foreground/80"
             }`}
             aria-pressed={isSelected}
-            aria-label={`Diente ${fdi}`}
+            aria-label={`Tooth ${fdi}`}
           >
             {fdi}
           </button>
@@ -76,7 +76,7 @@ export const ToothSelector = ({ value, onChange, maxCount }: Props) => {
       <div className="space-y-3">
         <div className="overflow-x-auto rounded-md border border-border bg-muted/10 p-4">
           <div className="mx-auto flex w-fit flex-col gap-3">
-            {/* Arcada superior */}
+            {/* Upper arch */}
             <div className="flex items-center gap-1">
               <div className="flex gap-1">{UPPER_RIGHT.map(renderTooth)}</div>
               <div className="mx-1 h-8 border-l border-border/60 md:h-10" />
@@ -85,7 +85,7 @@ export const ToothSelector = ({ value, onChange, maxCount }: Props) => {
 
             <div className="border-t border-dashed border-border/40" />
 
-            {/* Arcada inferior */}
+            {/* Lower arch */}
             <div className="flex items-center gap-1">
               <div className="flex gap-1">{LOWER_RIGHT.map(renderTooth)}</div>
               <div className="mx-1 h-8 border-l border-border/60 md:h-10" />
@@ -97,8 +97,7 @@ export const ToothSelector = ({ value, onChange, maxCount }: Props) => {
         <div className="flex items-center justify-between text-xs font-light">
           <span className={enough ? "text-foreground/80" : "text-foreground/60"}>
             {enough && <span className="mr-1">✓</span>}
-            {count} {target > 0 ? `de ${target}` : ""} pieza{count === 1 ? "" : "s"} seleccionada
-            {count === 1 ? "" : "s"}
+            {count} {target > 0 ? `of ${target}` : ""} tooth{count === 1 ? "" : "s"} selected
           </span>
           {count > 0 && (
             <button
@@ -106,7 +105,7 @@ export const ToothSelector = ({ value, onChange, maxCount }: Props) => {
               onClick={() => onChange([])}
               className="text-foreground/50 underline-offset-2 hover:text-foreground hover:underline"
             >
-              Limpiar
+              Clear
             </button>
           )}
         </div>

@@ -18,7 +18,7 @@ const TechnicianProfile = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     if (technician) {
-      document.title = `${technician.name} — Portafolio`;
+      document.title = `${technician.name} — Portfolio`;
     }
   }, [slug, technician]);
 
@@ -73,14 +73,14 @@ const TechnicianProfile = () => {
           className="inline-flex items-center gap-1.5 text-sm font-light text-foreground/70 transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Volver
+          Back
         </Link>
 
         <header className="mt-8 flex flex-col items-center text-center md:mt-12">
           {technician.profileImage && (
             <img
               src={technician.profileImage}
-              alt={`Foto de ${technician.name}`}
+              alt={`Photo of ${technician.name}`}
               className="mb-6 h-40 w-40 rounded-full object-cover shadow-md md:h-56 md:w-56"
               loading="lazy"
             />
@@ -94,9 +94,9 @@ const TechnicianProfile = () => {
         </header>
 
         {servicesByCategory.length > 0 && (
-          <section aria-label="Servicios" className="mt-10 md:mt-14">
+          <section aria-label="Services" className="mt-10 md:mt-14">
             <h2 className="text-xs font-light uppercase tracking-[0.2em] text-foreground/50">
-              Servicios
+              Services
             </h2>
             <div className="mt-4 space-y-6">
               {servicesByCategory.map((group) => (
@@ -132,7 +132,7 @@ const TechnicianProfile = () => {
         )}
       </div>
 
-      <section aria-label={`Portafolio de ${technician.name}`} className="mt-8 w-full md:mt-12">
+      <section aria-label={`${technician.name}'s portfolio`} className="mt-8 w-full md:mt-12">
         <div className="mx-auto max-w-3xl px-0 md:px-6">
           <div className="grid grid-cols-3 gap-1">
             {technician.gallery.map((image, i) => (
@@ -141,11 +141,11 @@ const TechnicianProfile = () => {
                 type="button"
                 onClick={() => setOpenIndex(i)}
                 className="group relative block aspect-square w-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label={`Abrir foto ${i + 1} de ${technician.gallery.length}`}
+                aria-label={`Open photo ${i + 1} of ${technician.gallery.length}`}
               >
                 <img
                   src={image}
-                  alt={`${technician.name} — trabajo ${i + 1}`}
+                  alt={`${technician.name} — work ${i + 1}`}
                   loading="lazy"
                   className="h-full w-full object-cover transition-opacity group-hover:opacity-90"
                 />
@@ -161,11 +161,11 @@ const TechnicianProfile = () => {
             <div className="flex flex-col items-center gap-3">
               <img
                 src={technician.gallery[openIndex]}
-                alt={`${technician.name} — trabajo ${openIndex + 1}`}
+                alt={`${technician.name} — work ${openIndex + 1}`}
                 className="block h-auto max-h-[85vh] w-full object-contain"
               />
               <p className="text-xs font-light text-foreground/50">
-                Foto {openIndex + 1} de {technician.gallery.length}
+                Photo {openIndex + 1} of {technician.gallery.length}
               </p>
             </div>
           )}
@@ -193,7 +193,7 @@ const TechnicianProfile = () => {
                     <span className="text-sm font-light text-foreground/80">
                       {item.service.name}
                       <span className="ml-2 text-xs text-foreground/40">
-                        {isPerToothService(item.service.slug) ? "· por pieza" : "· por caso"}
+                        {isPerToothService(item.service.slug) ? "· per tooth" : "· per case"}
                       </span>
                     </span>
                     <div className="flex items-center gap-1">
@@ -201,7 +201,7 @@ const TechnicianProfile = () => {
                         type="button"
                         onClick={() => updateQty(item.service.slug, -1)}
                         className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-foreground/70 transition-colors hover:border-foreground hover:text-foreground"
-                        aria-label="Reducir"
+                        aria-label="Decrease"
                       >
                         <Minus className="h-3 w-3" />
                       </button>
@@ -212,7 +212,7 @@ const TechnicianProfile = () => {
                         type="button"
                         onClick={() => updateQty(item.service.slug, 1)}
                         className="flex h-6 w-6 items-center justify-center rounded-full border border-border text-foreground/70 transition-colors hover:border-foreground hover:text-foreground"
-                        aria-label="Aumentar"
+                        aria-label="Increase"
                       >
                         <Plus className="h-3 w-3" />
                       </button>
@@ -221,7 +221,7 @@ const TechnicianProfile = () => {
                       type="button"
                       onClick={() => removeItem(item.service.slug)}
                       className="ml-1 text-foreground/40 transition-colors hover:text-foreground"
-                      aria-label="Quitar"
+                      aria-label="Remove"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -231,9 +231,9 @@ const TechnicianProfile = () => {
             </div>
             <div className="flex items-center justify-between gap-3 md:justify-end">
               <span className="text-xs font-light uppercase tracking-[0.15em] text-foreground/50">
-                {totalUnits} {totalUnits === 1 ? "caso" : "casos"}
+                {totalUnits} {totalUnits === 1 ? "case" : "cases"}
               </span>
-              <Button onClick={() => setCheckoutOpen(true)}>Solicitar ({totalUnits})</Button>
+              <Button onClick={() => setCheckoutOpen(true)}>Request ({totalUnits})</Button>
             </div>
           </div>
         </div>

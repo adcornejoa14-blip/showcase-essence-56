@@ -91,7 +91,7 @@ export const FileDropzone = ({
         >
           <Upload className="mx-auto h-5 w-5 text-foreground/50" />
           <p className="mt-2 text-xs font-light text-foreground/60">
-            Arrastra o haz clic para subir
+            Drag or click to upload
           </p>
           {accept && (
             <p className="mt-1 text-[10px] font-light text-foreground/40">{accept}</p>
@@ -113,10 +113,10 @@ export const FileDropzone = ({
           <div className="flex w-16 flex-col items-center gap-1">
             <img
               src={example}
-              alt="Ejemplo"
+              alt="Example"
               className="h-16 w-16 rounded-md border border-border object-cover"
             />
-            <span className="text-[10px] font-light text-foreground/50">Ejemplo</span>
+            <span className="text-[10px] font-light text-foreground/50">Example</span>
           </div>
         )}
       </div>
@@ -134,7 +134,7 @@ export const FileDropzone = ({
                 type="button"
                 onClick={() => removeAt(i)}
                 className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-background text-foreground/70 hover:text-foreground"
-                aria-label="Quitar archivo"
+                aria-label="Remove file"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -157,7 +157,7 @@ export const FileDropzone = ({
                 type="button"
                 onClick={() => removeAt(i)}
                 className="text-foreground/50 hover:text-foreground"
-                aria-label="Quitar archivo"
+                aria-label="Remove file"
               >
                 <X className="h-3.5 w-3.5" />
               </button>

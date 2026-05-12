@@ -12,11 +12,11 @@ const OnboardingSubmitted = ({ onContinue }: Props) => {
       </div>
 
       <h2 className="text-2xl font-light tracking-tight text-foreground md:text-3xl">
-        Solicitud recibida
+        Application received
       </h2>
       <p className="mt-4 max-w-md text-sm font-light leading-relaxed text-foreground/60">
-        Gracias por aplicar a NOMA Digital Studio. Revisaremos tu perfil y te contactaremos
-        por email cuando seas aceptado.
+        Thank you for applying to NOMA Digital Studio. We'll review your profile and contact
+        you by email once you're accepted.
       </p>
 
       <button
@@ -24,7 +24,7 @@ const OnboardingSubmitted = ({ onContinue }: Props) => {
         onClick={onContinue}
         className="mt-12 border border-foreground/20 px-10 py-3 text-sm font-light tracking-[0.2em] uppercase text-foreground/70 transition-colors hover:border-foreground/60 hover:text-foreground"
       >
-        Continuar
+        Continue
       </button>
     </div>
   );

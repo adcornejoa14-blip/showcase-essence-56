@@ -23,7 +23,7 @@ type Country = {
 
 const COUNTRIES: Country[] = [
   { code: "EC", geoName: "Ecuador", label: "Ecuador", rating: 4.8, coords: [-78.5, -1.5] },
-  { code: "BR", geoName: "Brazil", label: "Brasil", rating: 4.9, coords: [-51.9, -14.2] },
+  { code: "BR", geoName: "Brazil", label: "Brazil", rating: 4.9, coords: [-51.9, -14.2] },
 ];
 
 const NAME_AVAILABLE = new Set(COUNTRIES.map((c) => c.geoName));
@@ -81,17 +81,17 @@ const WorldMap = () => {
   };
 
   return (
-    <section aria-label="Selecciona un país" className="w-full bg-background">
+    <section aria-label="Select a country" className="w-full bg-background">
       <div className="mx-auto max-w-5xl px-5 py-10 md:py-16">
         <div className="mb-8 text-center">
           <p className="text-[10px] font-light uppercase tracking-[0.3em] text-foreground/40">
-            Curado por NOMA Digital Studio
+            Curated by NOMA Digital Studio
           </p>
           <h2 className="mt-3 text-2xl font-light tracking-tight text-foreground md:text-3xl">
-            Elige el origen de tus técnicos
+            Choose where your technicians come from
           </h2>
           <p className="mt-3 text-sm font-light text-foreground/50">
-            Cada país está revisado y puntuado por nuestro equipo.
+            Every country is reviewed and rated by our team.
           </p>
         </div>
 
@@ -225,7 +225,7 @@ const WorldMap = () => {
                   </p>
                   <p className="mt-1 text-base font-light text-foreground">{c.label}</p>
                   <p className="mt-1 text-xs font-light text-foreground/50">
-                    {c.count} {c.count === 1 ? "técnico" : "técnicos"}
+                    {c.count} {c.count === 1 ? "technician" : "technicians"}
                   </p>
                 </div>
                 <StarRow value={c.rating} />
@@ -241,7 +241,7 @@ const WorldMap = () => {
               onClick={() => selectCountry(null)}
               className="text-xs font-light tracking-wide text-foreground/40 underline-offset-4 hover:text-foreground/70 hover:underline"
             >
-              Quitar filtro de país
+              Clear country filter
             </button>
           </div>
         )}
