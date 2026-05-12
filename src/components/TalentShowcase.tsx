@@ -21,15 +21,15 @@ const TalentShowcase = () => {
       <div className="px-2 md:px-1">
         {filtered.length === 0 ? (
           <p className="py-20 text-center text-sm font-light text-foreground/50">
-            No hay técnicos disponibles para este servicio todavía.
+            No technicians available for this service yet.
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-1 md:grid-cols-3 lg:grid-cols-4">
             {filtered.map((tech, i) => (
               <Link
                 key={`${tech.name}-${i}`}
-                to={`/tecnico/${tech.slug}`}
-                aria-label={`Ver portafolio de ${tech.name}`}
+                to={`/technician/${tech.slug}`}
+                aria-label={`View ${tech.name}'s portfolio`}
                 className="block cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
               >
                 <GalleryItem tech={tech} index={i} />

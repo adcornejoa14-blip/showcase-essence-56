@@ -23,10 +23,10 @@ const calculateAge = (isoDate: string): number => {
 };
 
 const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
-  const [nombre, setNombre] = useState("");
-  const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [name, setName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [email, setEmail] = useState("");
-  const [especialidad, setEspecialidad] = useState("");
+  const [specialty, setSpecialty] = useState("");
   const [password, setPassword] = useState("");
   const [passwordRepeat, setPasswordRepeat] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
@@ -55,28 +55,28 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
     return () => urls.forEach((u) => URL.revokeObjectURL(u));
   }, [workPhotos]);
 
-  const especialidadLabel =
-    role === "dentist" ? "Especialidad odontológica" : "Especialidad técnica";
-  const especialidadPlaceholder =
-    role === "dentist" ? "Ej. Estética, Implantología…" : "Ej. CAD/CAM, Cerámica…";
+  const specialtyLabel =
+    role === "dentist" ? "Dental specialty" : "Technical specialty";
+  const specialtyPlaceholder =
+    role === "dentist" ? "e.g. Aesthetics, Implantology…" : "e.g. CAD/CAM, Ceramics…";
 
   const validate = (): boolean => {
     const e: Errors = {};
-    if (nombre.trim().length < 2) e.nombre = "Introduce tu nombre completo.";
-    if (!fechaNacimiento) {
-      e.fechaNacimiento = "Indica tu fecha de nacimiento.";
+    if (name.trim().length < 2) e.name = "Enter your full name.";
+    if (!birthDate) {
+      e.birthDate = "Please enter your date of birth.";
     } else {
-      const age = calculateAge(fechaNacimiento);
+      const age = calculateAge(birthDate);
       if (Number.isNaN(age) || age < 18 || age > 99)
-        e.fechaNacimiento = "Debes ser mayor de 18 años.";
+        e.birthDate = "You must be over 18.";
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Email no válido.";
-    if (especialidad.trim().length < 2) e.especialidad = "Indica tu especialidad.";
-    if (password.length < 6) e.password = "Mínimo 6 caracteres.";
-    if (password !== passwordRepeat) e.passwordRepeat = "Las contraseñas no coinciden.";
-    if (!profilePhoto) e.profilePhoto = "Sube una foto de perfil.";
-    if (workPhotos.length < 3) e.workPhotos = "Sube al menos 3 fotos de tu trabajo.";
-    if (workPhotos.length > 10) e.workPhotos = "Máximo 10 fotos.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Invalid email.";
+    if (specialty.trim().length < 2) e.specialty = "Enter your specialty.";
+    if (password.length < 6) e.password = "At least 6 characters.";
+    if (password !== passwordRepeat) e.passwordRepeat = "Passwords do not match.";
+    if (!profilePhoto) e.profilePhoto = "Upload a profile photo.";
+    if (workPhotos.length < 3) e.workPhotos = "Upload at least 3 photos of your work.";
+    if (workPhotos.length > 10) e.workPhotos = "Maximum 10 photos.";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -93,15 +93,15 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
     <div className="mx-auto w-full max-w-xl px-6 py-16 animate-fade-in">
       <div className="mb-10">
         <p className="text-xs font-light tracking-[0.2em] uppercase text-foreground/40">
-          {role === "dentist" ? "Dentista" : "Técnico dental"}
+          {role === "dentist" ? "Dentist" : "Dental Technician"}
         </p>
         <h2 className="mt-2 text-2xl font-light tracking-tight text-foreground md:text-3xl">
-          Tu solicitud
+          Your application
         </h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-        {/* Foto de perfil */}
+        {/* Profile photo */}
         <div className="flex flex-col items-center gap-3">
           <button
             type="button"
@@ -109,13 +109,13 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
             className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-dashed border-foreground/30 bg-foreground/5 transition-colors hover:border-foreground/60"
           >
             {profilePreview ? (
-              <img src={profilePreview} alt="Perfil" className="h-full w-full object-cover" />
+              <img src={profilePreview} alt="Profile" className="h-full w-full object-cover" />
             ) : (
               <Camera strokeWidth={1.25} className="h-6 w-6 text-foreground/50" />
             )}
           </button>
           <span className="text-xs font-light text-foreground/50">
-            {profilePhoto ? "Cambiar foto de perfil" : "Foto de perfil"}
+            {profilePhoto ? "Change profile photo" : "Profile photo"}
           </span>
           <input
             ref={profileRef}
@@ -133,38 +133,38 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
           )}
         </div>
 
-        {/* Nombre */}
+        {/* Name */}
         <div>
           <label className="text-xs font-light tracking-wide text-foreground/50">
-            Nombre completo
+            Full name
           </label>
           <input
             type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className={fieldClass}
-            placeholder="Tu nombre y apellidos"
+            placeholder="Your first and last name"
           />
-          {errors.nombre && (
-            <p className="mt-1 text-xs font-light text-destructive">{errors.nombre}</p>
+          {errors.name && (
+            <p className="mt-1 text-xs font-light text-destructive">{errors.name}</p>
           )}
         </div>
 
-        {/* Fecha de nacimiento */}
+        {/* Date of birth */}
         <div>
           <label className="text-xs font-light tracking-wide text-foreground/50">
-            Fecha de nacimiento
+            Date of birth
           </label>
           <input
             type="date"
-            value={fechaNacimiento}
-            onChange={(e) => setFechaNacimiento(e.target.value)}
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
             max={new Date().toISOString().split("T")[0]}
             min="1900-01-01"
             className={fieldClass}
           />
-          {errors.fechaNacimiento && (
-            <p className="mt-1 text-xs font-light text-destructive">{errors.fechaNacimiento}</p>
+          {errors.birthDate && (
+            <p className="mt-1 text-xs font-light text-destructive">{errors.birthDate}</p>
           )}
         </div>
 
@@ -176,41 +176,41 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className={fieldClass}
-            placeholder="tu@email.com"
+            placeholder="you@email.com"
           />
           {errors.email && (
             <p className="mt-1 text-xs font-light text-destructive">{errors.email}</p>
           )}
         </div>
 
-        {/* Especialidad */}
+        {/* Specialty */}
         <div>
           <label className="text-xs font-light tracking-wide text-foreground/50">
-            {especialidadLabel}
+            {specialtyLabel}
           </label>
           <input
             type="text"
-            value={especialidad}
-            onChange={(e) => setEspecialidad(e.target.value)}
+            value={specialty}
+            onChange={(e) => setSpecialty(e.target.value)}
             className={fieldClass}
-            placeholder={especialidadPlaceholder}
+            placeholder={specialtyPlaceholder}
           />
-          {errors.especialidad && (
-            <p className="mt-1 text-xs font-light text-destructive">{errors.especialidad}</p>
+          {errors.specialty && (
+            <p className="mt-1 text-xs font-light text-destructive">{errors.specialty}</p>
           )}
         </div>
 
         {/* Password */}
         <div>
           <label className="text-xs font-light tracking-wide text-foreground/50">
-            Contraseña
+            Password
           </label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={fieldClass}
-            placeholder="Mínimo 6 caracteres"
+            placeholder="At least 6 characters"
           />
           {errors.password && (
             <p className="mt-1 text-xs font-light text-destructive">{errors.password}</p>
@@ -219,25 +219,25 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
 
         <div>
           <label className="text-xs font-light tracking-wide text-foreground/50">
-            Repetir contraseña
+            Repeat password
           </label>
           <input
             type="password"
             value={passwordRepeat}
             onChange={(e) => setPasswordRepeat(e.target.value)}
             className={fieldClass}
-            placeholder="Repite tu contraseña"
+            placeholder="Repeat your password"
           />
           {errors.passwordRepeat && (
             <p className="mt-1 text-xs font-light text-destructive">{errors.passwordRepeat}</p>
           )}
         </div>
 
-        {/* Trabajos */}
+        {/* Work photos */}
         <div className="space-y-3 pt-4">
           <div className="flex items-baseline justify-between">
             <label className="text-xs font-light tracking-wide text-foreground/50">
-              Fotos de tus trabajos
+              Photos of your work
             </label>
             <span className="text-[10px] font-light text-foreground/40">
               {workPhotos.length} / 10
@@ -251,7 +251,7 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
           >
             <Upload className="mx-auto h-5 w-5 text-foreground/50" />
             <p className="mt-2 text-xs font-light text-foreground/60">
-              Haz clic para subir (3 a 10)
+              Click to upload (3 to 10)
             </p>
           </button>
           <input
@@ -275,7 +275,7 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
                 <div key={i} className="relative aspect-square">
                   <img
                     src={src}
-                    alt={`Trabajo ${i + 1}`}
+                    alt={`Work ${i + 1}`}
                     className="h-full w-full border border-border object-cover"
                   />
                   <button
@@ -284,7 +284,7 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
                       setWorkPhotos((prev) => prev.filter((_, idx) => idx !== i))
                     }
                     className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-border bg-background text-foreground/70 hover:text-foreground"
-                    aria-label="Quitar foto"
+                    aria-label="Remove photo"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -304,13 +304,13 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
             onClick={onBack}
             className="text-xs font-light tracking-[0.2em] uppercase text-foreground/40 hover:text-foreground/70"
           >
-            Atrás
+            Back
           </button>
           <button
             type="submit"
             className="border border-foreground/20 px-10 py-3 text-sm font-light tracking-[0.2em] uppercase text-foreground/70 transition-colors hover:border-foreground/60 hover:text-foreground"
           >
-            Enviar solicitud
+            Submit application
           </button>
         </div>
       </form>

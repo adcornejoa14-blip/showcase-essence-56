@@ -70,13 +70,13 @@ const ServiceSearch = () => {
   };
 
   return (
-    <section aria-label="Buscar servicio" className="w-full bg-background">
+    <section aria-label="Search service" className="w-full bg-background">
       <div className="mx-auto flex max-w-2xl flex-col items-center px-5 py-16 md:py-24">
         <h2 className="text-center text-2xl font-light tracking-tight text-foreground md:text-3xl">
-          ¿Qué necesitas?
+          What do you need?
         </h2>
         <p className="mt-3 text-center text-sm font-light text-foreground/50">
-          Busca un servicio y encuentra técnicos especializados.
+          Search for a service and find specialized technicians.
         </p>
 
         <div ref={containerRef} className="relative mt-10 w-full">
@@ -91,14 +91,14 @@ const ServiceSearch = () => {
               }}
               onFocus={() => setOpen(true)}
               onKeyDown={handleKeyDown}
-              placeholder="Ej. CAD/CAM Veneers, Wax-Up, Surgical Guide…"
+              placeholder="e.g. CAD/CAM Veneers, Wax-Up, Surgical Guide…"
               className="flex-1 bg-transparent text-base font-light text-foreground placeholder:text-foreground/30 focus:outline-none md:text-lg"
             />
             {(query || activeService) && (
               <button
                 type="button"
                 onClick={clearAll}
-                aria-label="Borrar búsqueda"
+                aria-label="Clear search"
                 className="text-foreground/40 hover:text-foreground"
               >
                 <X strokeWidth={1.25} className="h-4 w-4" />
@@ -146,7 +146,7 @@ const ServiceSearch = () => {
 
           {open && suggestions.length === 0 && (
             <div className="absolute left-0 right-0 top-full z-20 mt-2 border border-foreground/15 bg-background px-4 py-3 text-sm font-light text-foreground/50">
-              No hay servicios que coincidan.
+              No matching services.
             </div>
           )}
         </div>

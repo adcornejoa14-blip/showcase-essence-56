@@ -58,7 +58,7 @@ const Header = () => {
             <SheetTrigger asChild>
               <button
                 type="button"
-                aria-label="Abrir menú de servicios"
+                aria-label="Open services menu"
                 className="text-foreground/70 transition-colors hover:text-foreground"
               >
                 <Menu strokeWidth={1.25} className="h-5 w-5" />
@@ -67,7 +67,7 @@ const Header = () => {
             <SheetContent side="left" className="w-full max-w-sm overflow-y-auto">
               <SheetHeader>
                 <SheetTitle className="text-left text-lg font-light tracking-tight">
-                  Encuentra técnicos por servicio
+                  Find technicians by service
                 </SheetTitle>
               </SheetHeader>
 
@@ -81,7 +81,7 @@ const Header = () => {
                       : "text-foreground/50 hover:text-foreground"
                   }`}
                 >
-                  Ver todos los técnicos
+                  View all technicians
                 </button>
 
                 {SERVICE_CATEGORIES.map((category) => {
@@ -130,7 +130,7 @@ const Header = () => {
               }}
               className="text-xs font-light tracking-wide text-foreground/40 transition-colors hover:text-foreground/80"
             >
-              Cerrar sesión
+              Sign out
             </button>
           ) : (
             <Dialog open={open} onOpenChange={setOpen}>
@@ -139,16 +139,16 @@ const Header = () => {
                   type="button"
                   className="text-xs font-light tracking-wide text-foreground/40 transition-colors hover:text-foreground/80"
                 >
-                  Acceder
+                  Sign in
                 </button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader className="text-center sm:text-center">
                   <DialogTitle className="text-2xl font-light tracking-tight">
-                    Únete a Dentaly
+                    Join NOMA Digital Studio
                   </DialogTitle>
                   <DialogDescription className="text-sm font-light text-foreground/50">
-                    Elige cómo quieres participar
+                    Choose how you want to participate
                   </DialogDescription>
                 </DialogHeader>
                 <div className="mt-4 flex flex-col gap-3">
@@ -157,14 +157,14 @@ const Header = () => {
                     className="h-12 w-full font-light tracking-wide"
                     onClick={() => setOpen(false)}
                   >
-                    Unirme como dentista
+                    Join as a dentist
                   </Button>
                   <Button
                     variant="outline"
                     className="h-12 w-full font-light tracking-wide"
                     onClick={() => setOpen(false)}
                   >
-                    Unirme como técnico dental
+                    Join as a dental technician
                   </Button>
                 </div>
               </DialogContent>
@@ -176,7 +176,7 @@ const Header = () => {
       {activeService && (
         <div className="flex items-center justify-center gap-3 border-b border-border/40 bg-muted/20 px-4 py-2 text-xs font-light text-foreground/70">
           <span>
-            Filtrando por:{" "}
+            Filtering by:{" "}
             <span className="text-foreground">
               {services.find((s) => s.slug === activeService)?.name}
             </span>
@@ -184,10 +184,10 @@ const Header = () => {
           <button
             type="button"
             onClick={() => selectService(null)}
-            aria-label="Quitar filtro"
+            aria-label="Clear filter"
             className="flex items-center gap-1 text-foreground/50 hover:text-foreground"
           >
-            <X className="h-3 w-3" /> quitar
+            <X className="h-3 w-3" /> clear
           </button>
         </div>
       )}
