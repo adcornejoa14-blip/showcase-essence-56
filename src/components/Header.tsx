@@ -28,6 +28,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const activeService = searchParams.get("service");
+  const { session } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
