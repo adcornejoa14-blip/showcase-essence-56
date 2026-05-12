@@ -2,6 +2,7 @@ import { useState } from "react";
 import OnboardingManual from "./OnboardingManual";
 import OnboardingRoleStep, { type OnboardingRole } from "./OnboardingRole";
 import OnboardingForm from "./OnboardingForm";
+import OnboardingCredentials from "./OnboardingCredentials";
 import OnboardingSubmitted from "./OnboardingSubmitted";
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
   onBack: () => void;
 }
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3 | 4 | 5;
 
 const OnboardingFlow = ({ onComplete, onBack }: Props) => {
   const [step, setStep] = useState<Step>(1);
@@ -36,7 +37,13 @@ const OnboardingFlow = ({ onComplete, onBack }: Props) => {
           onBack={() => setStep(2)}
         />
       )}
-      {step === 4 && <OnboardingSubmitted onContinue={onComplete} />}
+      {step === 4 && (
+        <OnboardingCredentials
+          onCreated={() => setStep(5)}
+          onBack={() => setStep(3)}
+        />
+      )}
+      {step === 5 && <OnboardingSubmitted onContinue={onComplete} />}
     </div>
   );
 };

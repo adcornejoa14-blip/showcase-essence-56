@@ -6,50 +6,51 @@ import TalentShowcase from "@/components/TalentShowcase";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import LoginScreen from "@/components/onboarding/LoginScreen";
+import { useAuth } from "@/hooks/useAuth";
 
-type Phase = "welcome" | "onboarding" | "login" | "app";
-
-const PHASE_KEY = "noma:phase";
+type Intent = "welcome" | "onboarding" | "login";
 
 const Index = () => {
-  const [phase, setPhase] = useState<Phase>(() => {
-    if (typeof window === "undefined") return "welcome";
-    const saved = window.localStorage.getItem(PHASE_KEY) as Phase | null;
-    return saved ?? "welcome";
-  });
+  const { session, loading } = useAuth();
+  const [intent, setIntent] = useState<Intent>("welcome");
 
+  // Clean up legacy localStorage key from previous fake-auth flow
   useEffect(() => {
     try {
-      window.localStorage.setItem(PHASE_KEY, phase);
+      window.localStorage.removeItem("noma:phase");
     } catch {
       // ignore
     }
-  }, [phase]);
+  }, []);
 
-  if (phase === "welcome") {
+  if (loading) {
+    return <div className="min-h-screen bg-background" />;
+  }
+
+  if (!session) {
+    if (intent === "onboarding") {
+      return (
+        <OnboardingFlow
+          onComplete={() => setIntent("welcome")}
+          onBack={() => setIntent("welcome")}
+        />
+      );
+    }
+
+    if (intent === "login") {
+      return (
+        <LoginScreen
+          onLogin={() => setIntent("welcome")}
+          onBack={() => setIntent("welcome")}
+          onCreateAccount={() => setIntent("onboarding")}
+        />
+      );
+    }
+
     return (
       <WelcomeScreen
-        onCreateAccount={() => setPhase("onboarding")}
-        onLogin={() => setPhase("login")}
-      />
-    );
-  }
-
-  if (phase === "onboarding") {
-    return (
-      <OnboardingFlow
-        onComplete={() => setPhase("app")}
-        onBack={() => setPhase("welcome")}
-      />
-    );
-  }
-
-  if (phase === "login") {
-    return (
-      <LoginScreen
-        onLogin={() => setPhase("app")}
-        onBack={() => setPhase("welcome")}
-        onCreateAccount={() => setPhase("onboarding")}
+        onCreateAccount={() => setIntent("onboarding")}
+        onLogin={() => setIntent("login")}
       />
     );
   }

@@ -3,12 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/noma-logo-final.png";
 
 interface Props {
-  onLogin: () => void;
+  onCreated: () => void;
   onBack: () => void;
-  onCreateAccount: () => void;
 }
 
-const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
+const OnboardingCredentials = ({ onCreated, onBack }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,21 +19,29 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
   const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     setError(null);
+
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError("Email no válido.");
       return;
     }
-    setLoading(true);
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
-    setLoading(false);
-    if (signInError) {
-      setError("Email o contraseña incorrectos.");
+    if (password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
-    onLogin();
+
+    setLoading(true);
+    const { error: signUpError } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: { emailRedirectTo: `${window.location.origin}/` },
+    });
+    setLoading(false);
+
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
+    }
+    onCreated();
   };
 
   return (
@@ -42,10 +49,10 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
       <img src={logo} alt="NOMA" className="mb-12 w-40 select-none" draggable={false} />
 
       <h2 className="text-2xl font-light tracking-tight text-foreground md:text-3xl">
-        Iniciar sesión
+        Crea tu cuenta
       </h2>
       <p className="mt-3 text-sm font-light text-foreground/50">
-        Accede con tu cuenta de NOMA Digital Studio.
+        Último paso para acceder a NOMA Digital Studio.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-12 w-full space-y-8" noValidate>
@@ -70,7 +77,7 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={fieldClass}
-            placeholder="Tu contraseña"
+            placeholder="Mínimo 6 caracteres"
           />
         </div>
 
@@ -81,11 +88,11 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
           disabled={loading}
           className="w-full border border-foreground/20 px-10 py-3 text-sm font-light tracking-[0.2em] uppercase text-foreground/70 transition-colors hover:border-foreground/60 hover:text-foreground disabled:opacity-40"
         >
-          {loading ? "Entrando..." : "Entrar"}
+          {loading ? "Creando..." : "Crear cuenta"}
         </button>
       </form>
 
-      <div className="mt-10 flex w-full items-center justify-between">
+      <div className="mt-10 flex w-full items-center justify-start">
         <button
           type="button"
           onClick={onBack}
@@ -93,16 +100,9 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
         >
           Atrás
         </button>
-        <button
-          type="button"
-          onClick={onCreateAccount}
-          className="text-xs font-light tracking-wide text-foreground/40 hover:text-foreground/70"
-        >
-          ¿No tienes cuenta? <span className="underline">Crear cuenta</span>
-        </button>
       </div>
     </div>
   );
 };
 
-export default LoginScreen;
+export default OnboardingCredentials;
