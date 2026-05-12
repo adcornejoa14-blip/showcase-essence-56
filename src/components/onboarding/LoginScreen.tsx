@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/noma-logo-final.png";
 
 interface Props {
@@ -11,28 +12,28 @@ const LoginScreen = ({ onLogin, onBack, onCreateAccount }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const fieldClass =
     "w-full border-0 border-b border-foreground/15 bg-transparent px-0 py-2 text-sm font-light text-foreground placeholder:text-foreground/30 focus:border-foreground/60 focus:outline-none";
 
-  const VALID_USERS: { email: string; password: string }[] = [
-    { email: "santiagoguerragoes@gmail.com", password: "Goes2002" },
-  ];
-
-  const handleSubmit = (ev: React.FormEvent) => {
+  const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
+    setError(null);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError("Email no válido.");
       return;
     }
-    const match = VALID_USERS.find(
-      (u) => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password,
-    );
-    if (!match) {
+    setLoading(true);
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    setLoading(false);
+    if (signInError) {
       setError("Email o contraseña incorrectos.");
       return;
     }
-    setError(null);
     onLogin();
   };
 
