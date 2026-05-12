@@ -1,49 +1,45 @@
 ## Objetivo
+Cambiar todos los textos visibles de la interfaz del español al inglés, manteniendo la lógica y el diseño intactos.
 
-Cambiar el login actual (que sólo acepta una cuenta hardcodeada) por autenticación real con email y contraseña, para que puedas crear tu cuenta y la de cualquier otro usuario.
+## Alcance
+Traducir copy en todos los componentes y páginas. No se tocan nombres de servicios (ya están en inglés), ni la lógica, ni los datos del backend.
 
-## Pasos
+## Archivos a actualizar
 
-1. **Activar Lovable Cloud**
-   Provisión del backend (base de datos + autenticación). Sin cuentas externas, sin configuración manual.
+**Onboarding & Auth**
+- `src/components/WelcomeScreen.tsx` — "Crear cuenta" → "Create account", "Iniciar sesión" → "Sign in"
+- `src/components/onboarding/LoginScreen.tsx` — labels, placeholders, botones, mensajes de error
+- `src/components/onboarding/OnboardingManual.tsx` — título, descripción, los 3 pasos, botones
+- `src/components/onboarding/OnboardingRole.tsx` — "¿Cómo te unes?", roles, descripciones
+- `src/components/onboarding/OnboardingForm.tsx` — todos los labels, placeholders, errores, botones, "Foto de perfil", "Fotos de tus trabajos", etc.
+- `src/components/onboarding/OnboardingCredentials.tsx` — copy de creación de cuenta
+- `src/components/onboarding/OnboardingSubmitted.tsx` — "Solicitud recibida", mensaje, "Continuar"
 
-2. **Configurar autenticación email + contraseña**
-   - Auto-confirmación de email activada (entrada inmediata, sin email de verificación).
-   - Sin tabla de perfiles extra: sólo email/contraseña.
+**App principal**
+- `src/components/Header.tsx` — nav, "Cerrar sesión" → "Sign out"
+- `src/components/Hero.tsx` — copy del hero
+- `src/components/TalentShowcase.tsx` — títulos, filtros
+- `src/components/ServiceSearch.tsx` — placeholder, labels
+- `src/components/GalleryItem.tsx` — cualquier texto
+- `src/components/WorldMap.tsx` — labels
+- `src/components/case-upload/CaseUploadDialog.tsx` — todo el flujo de subida
+- `src/components/case-upload/FileDropzone.tsx`
+- `src/components/case-upload/ToothSelector.tsx`
+- `src/pages/Index.tsx` — cualquier copy directo
+- `src/pages/TechnicianProfile.tsx` — secciones del perfil
+- `src/pages/NotFound.tsx` — ya está en inglés ✓
+- `index.html` — `<title>`, meta description, lang="en"
 
-3. **Crear cliente de auth y hook de sesión**
-   - `src/integrations/...` se autogenera al activar Cloud.
-   - Nuevo hook `useAuth()` que escucha `onAuthStateChange` y expone `user`, `session`, `loading`.
+**Datos**
+- `src/data/technicians.ts` — revisar si hay bios/labels en español y traducir
+- `src/lib/caseRequirements.ts` — revisar requisitos en texto
 
-4. **Reescribir `LoginScreen`**
-   - Quitar la lista hardcodeada `VALID_USERS`.
-   - Llamar a `signInWithPassword({ email, password })`.
-   - Mostrar errores reales del backend ("credenciales inválidas", etc.).
+## Lo que NO se cambia
+- Nombres propios (NOMA Digital Studio)
+- Slugs, IDs, claves de datos
+- Servicios en `src/data/services.ts` (ya en inglés)
+- Lógica, validaciones, estructura de componentes
+- Diseño, espaciado, tokens
 
-5. **Añadir registro real en el flujo de onboarding**
-   - Al final de `OnboardingFlow` (paso 4 o un paso nuevo previo a "Submitted"), pedir email + contraseña y llamar a `signUp({ email, password, options: { emailRedirectTo: window.location.origin } })`.
-   - Si el registro tiene éxito, marcar `phase = "app"` y entrar.
-
-6. **Reemplazar el `phase` en `localStorage` por sesión real**
-   - En `Index.tsx`, en lugar de leer `noma:phase`, decidir la pantalla según la sesión:
-     - Sin sesión y sin acción → `welcome`.
-     - Usuario pulsa "Iniciar sesión" → `login`.
-     - Usuario pulsa "Crear cuenta" → `onboarding`.
-     - Sesión activa → `app` (esto se mantiene tras refresh automáticamente porque la sesión vive en el almacenamiento del cliente del backend).
-   - Añadir botón/acción de **cerrar sesión** en el `Header` cuando haya sesión.
-
-## Detalles técnicos
-
-- Auth client: `supabase.auth.signUp`, `signInWithPassword`, `signOut`, `getSession`, `onAuthStateChange`.
-- Orden crítico en `useAuth`: registrar `onAuthStateChange` **antes** de `getSession()` para no perder eventos.
-- No se crea tabla `profiles` (según tu elección). Si más adelante quieres guardar nombre, rol clínica/técnico, etc., se añade después.
-- El flujo actual de onboarding (manual, rol, formulario) se conserva visualmente; sólo se le añade el paso de credenciales para registrar la cuenta real.
-
-## Archivos afectados
-
-- `src/pages/Index.tsx` — sustituir `phase` por estado basado en sesión.
-- `src/components/onboarding/LoginScreen.tsx` — auth real.
-- `src/components/onboarding/OnboardingFlow.tsx` — añadir paso de credenciales / llamada a `signUp`.
-- `src/components/Header.tsx` — botón de cerrar sesión.
-- Nuevo: `src/hooks/useAuth.tsx`.
-- Autogenerados al activar Cloud: cliente del backend y tipos.
+## Verificación
+Tras los cambios, recorrer las pantallas principales (welcome, login, onboarding completo, home, perfil técnico, diálogo de subir caso) en el preview para confirmar que no queda texto en español.
