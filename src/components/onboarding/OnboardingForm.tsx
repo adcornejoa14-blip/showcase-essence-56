@@ -244,29 +244,30 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
             </span>
           </div>
 
-          <div
+          <button
+            type="button"
             onClick={() => worksRef.current?.click()}
-            className="cursor-pointer border border-dashed border-foreground/20 px-4 py-8 text-center transition-colors hover:border-foreground/50 hover:bg-foreground/5"
+            className="block w-full cursor-pointer border border-dashed border-foreground/20 px-4 py-8 text-center transition-colors hover:border-foreground/50 hover:bg-foreground/5"
           >
             <Upload className="mx-auto h-5 w-5 text-foreground/50" />
             <p className="mt-2 text-xs font-light text-foreground/60">
-              Arrastra o haz clic para subir (3 a 10)
+              Haz clic para subir (3 a 10)
             </p>
-            <input
-              ref={worksRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={(e) => {
-                const list = e.target.files;
-                if (list) {
-                  setWorkPhotos((prev) => [...prev, ...Array.from(list)].slice(0, 10));
-                }
-                e.target.value = "";
-              }}
-            />
-          </div>
+          </button>
+          <input
+            ref={worksRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              const list = e.target.files;
+              if (list) {
+                setWorkPhotos((prev) => [...prev, ...Array.from(list)].slice(0, 10));
+              }
+              e.target.value = "";
+            }}
+          />
 
           {workPreviews.length > 0 && (
             <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
