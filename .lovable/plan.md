@@ -1,24 +1,25 @@
-## Problem
-In the "Create account" flow, the "Photos of your work" section doesn't accept uploads via click or drag-and-drop, and there's no visual feedback when files are received.
+## Añadir dos campos nuevos al formulario "Create an account"
 
-## Root cause
-`OnboardingForm.tsx` only wires a click handler on the upload area — there's no `onDragOver` / `onDrop` listener, so dragging files does nothing. Click upload should work, but there's no toast/confirmation when files are added, so it feels broken.
+En `src/components/onboarding/OnboardingForm.tsx`, agregar **dos campos independientes** después de "Specialty":
 
-## Changes (only `src/components/onboarding/OnboardingForm.tsx`)
+### 1. Why do you want to be part of NOMA?
+- Textarea (multilínea, 3 filas, `resize-none`).
+- **Obligatorio** — mínimo 20 caracteres.
+- Placeholder: "Tell us briefly what motivates you to join NOMA…"
+- Error: "Tell us a bit more (min. 20 characters)."
 
-1. **Enable drag & drop** on the work-photos upload area:
-   - Add `onDragOver`, `onDragLeave`, `onDrop` handlers
-   - Add a `isDragging` state for visual feedback (border highlight while dragging)
-   - Filter only image files from the dropped list and append (capped at 10)
+### 2. Who recommends you?
+- Input de una línea, **separado** del anterior (su propio label y bloque).
+- **Opcional** — sin validación si está vacío.
+- Placeholder: "Name of the person who recommends you (optional)"
 
-2. **Confirmation when photos are received**:
-   - Use `sonner` `toast.success(...)` showing how many photos were added (e.g. "3 photos added")
-   - Trigger from a single `addWorkPhotos(files)` helper used by both click input and drop handler
-   - Show `toast.error` if user tries to exceed 10 or drops non-image files
+### Detalles técnicos
+- Nuevo estado: `motivation`, `referrer`.
+- Extender el tipo `Errors` con `motivation`.
+- Añadir validación de `motivation` en `validate()`.
+- Reutilizar la clase `fieldClass` (estilo minimal con borde inferior) para ambos.
+- Mantener todo el copy en inglés, consistente con el resto del formulario.
 
-3. **Same treatment for the profile photo** dropzone (consistent UX): allow drag & drop and show a small confirmation toast when the profile photo is set.
-
-## Out of scope
-- No backend / storage changes (uploads still happen at submit time as today)
-- No design system changes
-- No other onboarding steps touched
+### Fuera de alcance
+- No se persisten en la base de datos todavía (igual que el resto de campos del formulario actual).
+- No se tocan otros pasos del onboarding.

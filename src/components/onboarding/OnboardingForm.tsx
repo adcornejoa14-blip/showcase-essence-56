@@ -11,7 +11,7 @@ interface Props {
 }
 
 type Errors = Partial<Record<
-  "name" | "birthDate" | "email" | "specialty" | "password" | "passwordRepeat" | "profilePhoto" | "workPhotos",
+  "name" | "birthDate" | "email" | "specialty" | "motivation" | "password" | "passwordRepeat" | "profilePhoto" | "workPhotos",
   string
 >>;
 
