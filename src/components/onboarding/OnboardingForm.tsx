@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Upload, X, Camera } from "lucide-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import type { OnboardingRole } from "./OnboardingRole";
 
 interface Props {
@@ -32,6 +34,41 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [workPhotos, setWorkPhotos] = useState<File[]>([]);
   const [errors, setErrors] = useState<Errors>({});
+  const [isDraggingWork, setIsDraggingWork] = useState(false);
+  const [isDraggingProfile, setIsDraggingProfile] = useState(false);
+
+  const setProfilePhotoWithToast = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are allowed.");
+      return;
+    }
+    setProfilePhoto(file);
+    toast.success("Profile photo added");
+  };
+
+  const addWorkPhotos = (files: FileList | File[] | null) => {
+    if (!files) return;
+    const arr = Array.from(files);
+    const images = arr.filter((f) => f.type.startsWith("image/"));
+    const rejected = arr.length - images.length;
+    if (rejected > 0) {
+      toast.error(`${rejected} file${rejected > 1 ? "s" : ""} ignored (only images).`);
+    }
+    if (images.length === 0) return;
+    setWorkPhotos((prev) => {
+      const remaining = 10 - prev.length;
+      if (remaining <= 0) {
+        toast.error("Maximum 10 photos.");
+        return prev;
+      }
+      const toAdd = images.slice(0, remaining);
+      if (images.length > remaining) {
+        toast.error(`Only ${remaining} more photo${remaining > 1 ? "s" : ""} allowed.`);
+      }
+      toast.success(`${toAdd.length} photo${toAdd.length > 1 ? "s" : ""} added`);
+      return [...prev, ...toAdd];
+    });
+  };
 
   const profileRef = useRef<HTMLInputElement>(null);
   const worksRef = useRef<HTMLInputElement>(null);
@@ -106,7 +143,21 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
           <button
             type="button"
             onClick={() => profileRef.current?.click()}
-            className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-dashed border-foreground/30 bg-foreground/5 transition-colors hover:border-foreground/60"
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDraggingProfile(true);
+            }}
+            onDragLeave={() => setIsDraggingProfile(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDraggingProfile(false);
+              const f = e.dataTransfer.files?.[0];
+              if (f) setProfilePhotoWithToast(f);
+            }}
+            className={cn(
+              "relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-dashed border-foreground/30 bg-foreground/5 transition-colors hover:border-foreground/60",
+              isDraggingProfile && "border-foreground/70 bg-foreground/10",
+            )}
           >
             {profilePreview ? (
               <img src={profilePreview} alt="Profile" className="h-full w-full object-cover" />
@@ -124,7 +175,7 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
-              if (f) setProfilePhoto(f);
+              if (f) setProfilePhotoWithToast(f);
               e.target.value = "";
             }}
           />
@@ -244,16 +295,28 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
             </span>
           </div>
 
-          <button
-            type="button"
+          <div
             onClick={() => worksRef.current?.click()}
-            className="block w-full cursor-pointer border border-dashed border-foreground/20 px-4 py-8 text-center transition-colors hover:border-foreground/50 hover:bg-foreground/5"
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDraggingWork(true);
+            }}
+            onDragLeave={() => setIsDraggingWork(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDraggingWork(false);
+              addWorkPhotos(e.dataTransfer.files);
+            }}
+            className={cn(
+              "block w-full cursor-pointer border border-dashed border-foreground/20 px-4 py-8 text-center transition-colors hover:border-foreground/50 hover:bg-foreground/5",
+              isDraggingWork && "border-foreground/70 bg-foreground/10",
+            )}
           >
             <Upload className="mx-auto h-5 w-5 text-foreground/50" />
             <p className="mt-2 text-xs font-light text-foreground/60">
-              Click to upload (3 to 10)
+              Drag or click to upload (3 to 10)
             </p>
-          </button>
+          </div>
           <input
             ref={worksRef}
             type="file"
@@ -261,10 +324,7 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
             multiple
             className="hidden"
             onChange={(e) => {
-              const list = e.target.files;
-              if (list) {
-                setWorkPhotos((prev) => [...prev, ...Array.from(list)].slice(0, 10));
-              }
+              addWorkPhotos(e.target.files);
               e.target.value = "";
             }}
           />
