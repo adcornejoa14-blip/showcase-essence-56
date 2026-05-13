@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Upload, X, Camera } from "lucide-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import type { OnboardingRole } from "./OnboardingRole";
 
 interface Props {
