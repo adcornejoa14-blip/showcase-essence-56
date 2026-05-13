@@ -111,6 +111,7 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Invalid email.";
     if (specialty.trim().length < 2) e.specialty = "Enter your specialty.";
+    if (motivation.trim().length < 20) e.motivation = "Tell us a bit more (min. 20 characters).";
     if (password.length < 6) e.password = "At least 6 characters.";
     if (password !== passwordRepeat) e.passwordRepeat = "Passwords do not match.";
     if (!profilePhoto) e.profilePhoto = "Upload a profile photo.";
