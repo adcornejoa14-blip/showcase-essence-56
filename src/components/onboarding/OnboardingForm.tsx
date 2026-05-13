@@ -29,6 +29,8 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
   const [birthDate, setBirthDate] = useState("");
   const [email, setEmail] = useState("");
   const [specialty, setSpecialty] = useState("");
+  const [motivation, setMotivation] = useState("");
+  const [referrer, setReferrer] = useState("");
   const [password, setPassword] = useState("");
   const [passwordRepeat, setPasswordRepeat] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
