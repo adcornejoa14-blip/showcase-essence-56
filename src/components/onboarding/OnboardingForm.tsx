@@ -143,7 +143,21 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
           <button
             type="button"
             onClick={() => profileRef.current?.click()}
-            className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-dashed border-foreground/30 bg-foreground/5 transition-colors hover:border-foreground/60"
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDraggingProfile(true);
+            }}
+            onDragLeave={() => setIsDraggingProfile(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDraggingProfile(false);
+              const f = e.dataTransfer.files?.[0];
+              if (f) setProfilePhotoWithToast(f);
+            }}
+            className={cn(
+              "relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-dashed border-foreground/30 bg-foreground/5 transition-colors hover:border-foreground/60",
+              isDraggingProfile && "border-foreground/70 bg-foreground/10",
+            )}
           >
             {profilePreview ? (
               <img src={profilePreview} alt="Profile" className="h-full w-full object-cover" />
@@ -161,7 +175,7 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
-              if (f) setProfilePhoto(f);
+              if (f) setProfilePhotoWithToast(f);
               e.target.value = "";
             }}
           />
