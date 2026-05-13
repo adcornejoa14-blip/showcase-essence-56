@@ -11,7 +11,7 @@ interface Props {
 }
 
 type Errors = Partial<Record<
-  "name" | "birthDate" | "email" | "specialty" | "password" | "passwordRepeat" | "profilePhoto" | "workPhotos",
+  "name" | "birthDate" | "email" | "specialty" | "motivation" | "password" | "passwordRepeat" | "profilePhoto" | "workPhotos",
   string
 >>;
 
@@ -29,6 +29,8 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
   const [birthDate, setBirthDate] = useState("");
   const [email, setEmail] = useState("");
   const [specialty, setSpecialty] = useState("");
+  const [motivation, setMotivation] = useState("");
+  const [referrer, setReferrer] = useState("");
   const [password, setPassword] = useState("");
   const [passwordRepeat, setPasswordRepeat] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
@@ -109,6 +111,7 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Invalid email.";
     if (specialty.trim().length < 2) e.specialty = "Enter your specialty.";
+    if (motivation.trim().length < 20) e.motivation = "Tell us a bit more (min. 20 characters).";
     if (password.length < 6) e.password = "At least 6 characters.";
     if (password !== passwordRepeat) e.passwordRepeat = "Passwords do not match.";
     if (!profilePhoto) e.profilePhoto = "Upload a profile photo.";
@@ -275,6 +278,38 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
           {errors.specialty && (
             <p className="mt-1 text-xs font-light text-destructive">{errors.specialty}</p>
           )}
+        </div>
+
+        {/* Why NOMA */}
+        <div>
+          <label className="text-xs font-light tracking-wide text-foreground/50">
+            Why do you want to be part of NOMA?
+          </label>
+          <textarea
+            value={motivation}
+            onChange={(e) => setMotivation(e.target.value)}
+            rows={3}
+            className={`${fieldClass} resize-none`}
+            placeholder="Tell us briefly what motivates you to join NOMA…"
+          />
+          {errors.motivation && (
+            <p className="mt-1 text-xs font-light text-destructive">{errors.motivation}</p>
+          )}
+        </div>
+
+        {/* Referrer */}
+        <div>
+          <label className="text-xs font-light tracking-wide text-foreground/50">
+            Who recommends you?
+          </label>
+          <input
+            type="text"
+            value={referrer}
+            onChange={(e) => setReferrer(e.target.value)}
+            maxLength={80}
+            className={fieldClass}
+            placeholder="Name of the person who recommends you (optional)"
+          />
         </div>
 
         {/* Password */}
