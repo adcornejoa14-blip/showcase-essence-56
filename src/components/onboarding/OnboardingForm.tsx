@@ -295,16 +295,28 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
             </span>
           </div>
 
-          <button
-            type="button"
+          <div
             onClick={() => worksRef.current?.click()}
-            className="block w-full cursor-pointer border border-dashed border-foreground/20 px-4 py-8 text-center transition-colors hover:border-foreground/50 hover:bg-foreground/5"
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDraggingWork(true);
+            }}
+            onDragLeave={() => setIsDraggingWork(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDraggingWork(false);
+              addWorkPhotos(e.dataTransfer.files);
+            }}
+            className={cn(
+              "block w-full cursor-pointer border border-dashed border-foreground/20 px-4 py-8 text-center transition-colors hover:border-foreground/50 hover:bg-foreground/5",
+              isDraggingWork && "border-foreground/70 bg-foreground/10",
+            )}
           >
             <Upload className="mx-auto h-5 w-5 text-foreground/50" />
             <p className="mt-2 text-xs font-light text-foreground/60">
-              Click to upload (3 to 10)
+              Drag or click to upload (3 to 10)
             </p>
-          </button>
+          </div>
           <input
             ref={worksRef}
             type="file"
@@ -312,10 +324,7 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
             multiple
             className="hidden"
             onChange={(e) => {
-              const list = e.target.files;
-              if (list) {
-                setWorkPhotos((prev) => [...prev, ...Array.from(list)].slice(0, 10));
-              }
+              addWorkPhotos(e.target.files);
               e.target.value = "";
             }}
           />
