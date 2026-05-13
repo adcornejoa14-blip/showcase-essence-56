@@ -34,6 +34,41 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [workPhotos, setWorkPhotos] = useState<File[]>([]);
   const [errors, setErrors] = useState<Errors>({});
+  const [isDraggingWork, setIsDraggingWork] = useState(false);
+  const [isDraggingProfile, setIsDraggingProfile] = useState(false);
+
+  const setProfilePhotoWithToast = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are allowed.");
+      return;
+    }
+    setProfilePhoto(file);
+    toast.success("Profile photo added");
+  };
+
+  const addWorkPhotos = (files: FileList | File[] | null) => {
+    if (!files) return;
+    const arr = Array.from(files);
+    const images = arr.filter((f) => f.type.startsWith("image/"));
+    const rejected = arr.length - images.length;
+    if (rejected > 0) {
+      toast.error(`${rejected} file${rejected > 1 ? "s" : ""} ignored (only images).`);
+    }
+    if (images.length === 0) return;
+    setWorkPhotos((prev) => {
+      const remaining = 10 - prev.length;
+      if (remaining <= 0) {
+        toast.error("Maximum 10 photos.");
+        return prev;
+      }
+      const toAdd = images.slice(0, remaining);
+      if (images.length > remaining) {
+        toast.error(`Only ${remaining} more photo${remaining > 1 ? "s" : ""} allowed.`);
+      }
+      toast.success(`${toAdd.length} photo${toAdd.length > 1 ? "s" : ""} added`);
+      return [...prev, ...toAdd];
+    });
+  };
 
   const profileRef = useRef<HTMLInputElement>(null);
   const worksRef = useRef<HTMLInputElement>(null);
