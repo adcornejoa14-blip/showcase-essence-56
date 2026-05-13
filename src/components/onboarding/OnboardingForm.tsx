@@ -280,6 +280,38 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
           )}
         </div>
 
+        {/* Why NOMA */}
+        <div>
+          <label className="text-xs font-light tracking-wide text-foreground/50">
+            Why do you want to be part of NOMA?
+          </label>
+          <textarea
+            value={motivation}
+            onChange={(e) => setMotivation(e.target.value)}
+            rows={3}
+            className={`${fieldClass} resize-none`}
+            placeholder="Tell us briefly what motivates you to join NOMA…"
+          />
+          {errors.motivation && (
+            <p className="mt-1 text-xs font-light text-destructive">{errors.motivation}</p>
+          )}
+        </div>
+
+        {/* Referrer */}
+        <div>
+          <label className="text-xs font-light tracking-wide text-foreground/50">
+            Who recommends you?
+          </label>
+          <input
+            type="text"
+            value={referrer}
+            onChange={(e) => setReferrer(e.target.value)}
+            maxLength={80}
+            className={fieldClass}
+            placeholder="Name of the person who recommends you (optional)"
+          />
+        </div>
+
         {/* Password */}
         <div>
           <label className="text-xs font-light tracking-wide text-foreground/50">
