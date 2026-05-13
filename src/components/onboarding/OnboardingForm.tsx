@@ -239,13 +239,39 @@ const OnboardingForm = ({ role, onSubmit, onBack }: Props) => {
           <label className="text-xs font-light tracking-wide text-foreground/50">
             {specialtyLabel}
           </label>
-          <input
-            type="text"
-            value={specialty}
-            onChange={(e) => setSpecialty(e.target.value)}
-            className={fieldClass}
-            placeholder={specialtyPlaceholder}
-          />
+          {role === "dentist" ? (
+            <select
+              value={specialty}
+              onChange={(e) => setSpecialty(e.target.value)}
+              className={`${fieldClass} appearance-none`}
+            >
+              <option value="">Select a specialty…</option>
+              {[
+                "General Dentistry",
+                "Aesthetic / Cosmetic Dentistry",
+                "Implantology",
+                "Orthodontics",
+                "Endodontics",
+                "Periodontics",
+                "Oral Surgery",
+                "Prosthodontics",
+                "Pediatric Dentistry (Pedodontics)",
+                "Oral & Maxillofacial Surgery",
+              ].map((s) => (
+                <option key={s} value={s} className="bg-background text-foreground">
+                  {s}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="text"
+              value={specialty}
+              onChange={(e) => setSpecialty(e.target.value)}
+              className={fieldClass}
+              placeholder={specialtyPlaceholder}
+            />
+          )}
           {errors.specialty && (
             <p className="mt-1 text-xs font-light text-destructive">{errors.specialty}</p>
           )}
