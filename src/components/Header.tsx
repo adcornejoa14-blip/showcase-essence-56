@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { SERVICE_CATEGORIES, services } from "@/data/services";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -124,6 +125,7 @@ const Header = () => {
         <div className="justify-self-end">
           {session ? (
             <div className="flex items-center gap-4">
+              <NotificationBell />
               <button
                 type="button"
                 onClick={() => navigate("/my-quotes")}
