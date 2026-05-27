@@ -1,25 +1,40 @@
-## Añadir dos campos nuevos al formulario "Create an account"
+## Hero "Curated marketplace" — scroll-driven
 
-En `src/components/onboarding/OnboardingForm.tsx`, agregar **dos campos independientes** después de "Specialty":
+Crear un nuevo hero scroll-driven en la **WelcomeScreen** (la pantalla con el logo NOMA, antes del login), inspirado en el screenshot de "Built to be found": layout de dos columnas con headline grande y bold a la izquierda + tarjeta beige redondeada a la derecha. Al hacer scroll, el contenido cambia tipo PowerPoint/Keynote.
 
-### 1. Why do you want to be part of NOMA?
-- Textarea (multilínea, 3 filas, `resize-none`).
-- **Obligatorio** — mínimo 20 caracteres.
-- Placeholder: "Tell us briefly what motivates you to join NOMA…"
-- Error: "Tell us a bit more (min. 20 characters)."
+### Estructura
 
-### 2. Who recommends you?
-- Input de una línea, **separado** del anterior (su propio label y bloque).
-- **Opcional** — sin validación si está vacío.
-- Placeholder: "Name of the person who recommends you (optional)"
+1. **Sección inicial** (viewport completo): logo NOMA centrado + botones Create account / Sign in (lo que ya existe). Indicador sutil "scroll" abajo.
+2. **Sección hero scroll-driven** (pin de ~4 viewports de alto):
+   - Columna izquierda: headline gigante negro (estilo serif/sans bold extra grande tipo el screenshot) + subtítulo gris debajo + párrafo de apoyo.
+   - Columna derecha: card beige `rounded-3xl` con título medio + descripción.
+   - Las dos columnas hacen **crossfade** al scrollear entre 4 slides.
 
-### Detalles técnicos
-- Nuevo estado: `motivation`, `referrer`.
-- Extender el tipo `Errors` con `motivation`.
-- Añadir validación de `motivation` en `validate()`.
-- Reutilizar la clase `fieldClass` (estilo minimal con borde inferior) para ambos.
-- Mantener todo el copy en inglés, consistente con el resto del formulario.
+### Slides (defaults, editables luego)
 
-### Fuera de alcance
-- No se persisten en la base de datos todavía (igual que el resto de campos del formulario actual).
-- No se tocan otros pasos del onboarding.
+1. **Curated marketplace** — "Hand-picked dental excellence" · Card: "Every clinic and lab vetted" — "We only invite the top 1% of dental professionals worldwide."
+2. **Verified specialists** — "Credentials you can trust" · Card: "Real specialty, real cases" — "Implantology, orthodontics, prosthodontics — verified at the source."
+3. **Cases delivered with precision** — "From scan to final restoration" · Card: "End-to-end digital workflow" — "Intraoral scans, design and milling in one orchestrated flow."
+4. **Built for the modern clinic** — "Software that respects your time" · Card: "Less admin. More dentistry." — "NOMA handles referrals, payments and case tracking."
+
+### Comportamiento (técnico)
+
+- Componente nuevo `src/components/ScrollHero.tsx`.
+- Wrapper con `height: 400vh` y un hijo `sticky top-0 h-screen`.
+- Hook `useScroll` + `useTransform` de **framer-motion** (ya instalado) para mapear `scrollYProgress` → índice de slide (0–3) con `useMotionValueEvent`.
+- Cada slide envuelto en `<motion.div>` con `opacity` interpolado por rangos (`[0, 0.2, 0.3, 0.5]` → `[0,1,1,0]`) para crossfade limpio.
+- Tipografía: headline con `font-serif`-ish bold extra grande (`text-6xl md:text-8xl lg:text-9xl font-black tracking-tight`) usando los tokens existentes.
+- Colores: usar tokens semánticos (`bg-background`, `text-foreground`, `bg-muted` para la card). Nada hardcoded.
+- Indicador de progreso lateral (4 puntitos) que se ilumina con el slide activo.
+- Mobile: stack vertical, misma mecánica de crossfade, tamaños reducidos.
+
+### Integración
+
+- Reescribir `WelcomeScreen.tsx` para ser scrollable (quitar `fixed inset-0`, dejar `min-h-screen` y permitir scroll).
+- Orden: `[hero logo + CTAs full screen]` → `<ScrollHero />` → al final, repetir CTAs Create account / Sign in para no obligar a subir.
+- No tocar la home post-login (ServiceSearch / WorldMap / TalentShowcase) ni ningún flujo de auth/onboarding.
+
+### Archivos afectados
+
+- **Nuevo:** `src/components/ScrollHero.tsx`
+- **Editado:** `src/components/WelcomeScreen.tsx`
