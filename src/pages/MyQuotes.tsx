@@ -48,6 +48,7 @@ const MyQuotes = () => {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [filter, setFilter] = useState<Quote["status"] | "all">("all");
   const [fetching, setFetching] = useState(true);
+  const [openChat, setOpenChat] = useState<Quote | null>(null);
 
   useEffect(() => {
     document.title = "My quotes";
