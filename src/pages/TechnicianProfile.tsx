@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, X } from "lucide-react";
+import { ArrowLeft, Minus, Plus, Star, X } from "lucide-react";
 import { getTechnicianBySlug } from "@/data/technicians";
 import { SERVICE_CATEGORIES, type Service } from "@/data/services";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CaseUploadDialog, type CartItem } from "@/components/case-upload/CaseUploadDialog";
 import { isPerToothService } from "@/lib/caseRequirements";
+import { supabase } from "@/integrations/supabase/client";
+import TechnicianReviews from "@/components/reviews/TechnicianReviews";
 
 const TechnicianProfile = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -14,6 +16,20 @@ const TechnicianProfile = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [summary, setSummary] = useState<{ avg: number; count: number } | null>(null);
+
+  useEffect(() => {
+    if (!slug) return;
+    supabase
+      .from("technician_ratings")
+      .select("avg_rating, review_count")
+      .eq("technician_slug", slug)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setSummary({ avg: Number(data.avg_rating), count: data.review_count });
+        else setSummary(null);
+      });
+  }, [slug]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -91,6 +107,15 @@ const TechnicianProfile = () => {
           <p className="mt-2 text-sm font-light text-foreground/60 md:text-base">
             {technician.specialty} · {technician.city}
           </p>
+          {summary && summary.count > 0 && (
+            <p className="mt-3 inline-flex items-center gap-1.5 text-sm font-light text-foreground/80">
+              <span className="tabular-nums">{summary.avg.toFixed(1)}</span>
+              <Star className="h-3.5 w-3.5 fill-foreground text-foreground" />
+              <span className="text-foreground/50">
+                ({summary.count} {summary.count === 1 ? "review" : "reviews"})
+              </span>
+            </p>
+          )}
         </header>
 
         {servicesByCategory.length > 0 && (
@@ -154,6 +179,10 @@ const TechnicianProfile = () => {
           </div>
         </div>
       </section>
+
+      <TechnicianReviews slug={technician.slug} />
+
+
 
       <Dialog open={openIndex !== null} onOpenChange={(open) => !open && setOpenIndex(null)}>
         <DialogContent className="max-w-3xl border-0 bg-background p-2 md:p-4">

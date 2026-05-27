@@ -1,0 +1,1 @@
+ALTER VIEW public.technician_ratings SET (security_invoker = true);
