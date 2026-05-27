@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      quotes: {
+        Row: {
+          created_at: string
+          dentist_id: string
+          id: string
+          items: Json
+          notes: string | null
+          platform_fee: number
+          status: Database["public"]["Enums"]["quote_status"]
+          subtotal: number
+          technician_slug: string
+          total: number
+        }
+        Insert: {
+          created_at?: string
+          dentist_id: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          platform_fee?: number
+          status?: Database["public"]["Enums"]["quote_status"]
+          subtotal?: number
+          technician_slug: string
+          total?: number
+        }
+        Update: {
+          created_at?: string
+          dentist_id?: string
+          id?: string
+          items?: Json
+          notes?: string | null
+          platform_fee?: number
+          status?: Database["public"]["Enums"]["quote_status"]
+          subtotal?: number
+          technician_slug?: string
+          total?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +61,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      quote_status: "pending" | "accepted" | "rejected" | "paid" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +188,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      quote_status: ["pending", "accepted", "rejected", "paid", "completed"],
+    },
   },
 } as const
