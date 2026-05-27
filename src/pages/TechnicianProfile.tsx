@@ -180,6 +180,10 @@ const TechnicianProfile = () => {
         </div>
       </section>
 
+      <TechnicianReviews slug={technician.slug} />
+
+
+
       <Dialog open={openIndex !== null} onOpenChange={(open) => !open && setOpenIndex(null)}>
         <DialogContent className="max-w-3xl border-0 bg-background p-2 md:p-4">
           {openIndex !== null && (
