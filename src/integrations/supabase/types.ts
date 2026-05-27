@@ -55,6 +55,39 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          link: string | null
+          read: boolean
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          link?: string | null
+          read?: boolean
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          link?: string | null
+          read?: boolean
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       quotes: {
         Row: {
           created_at: string
@@ -162,6 +195,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      notification_type:
+        | "quote_received"
+        | "quote_accepted"
+        | "quote_rejected"
+        | "new_message"
+        | "order_completed"
+        | "review_received"
       quote_status: "pending" | "accepted" | "rejected" | "paid" | "completed"
     }
     CompositeTypes: {
@@ -290,6 +330,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      notification_type: [
+        "quote_received",
+        "quote_accepted",
+        "quote_rejected",
+        "new_message",
+        "order_completed",
+        "review_received",
+      ],
       quote_status: ["pending", "accepted", "rejected", "paid", "completed"],
     },
   },
