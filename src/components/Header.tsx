@@ -123,15 +123,24 @@ const Header = () => {
 
         <div className="justify-self-end">
           {session ? (
-            <button
-              type="button"
-              onClick={async () => {
-                await supabase.auth.signOut();
-              }}
-              className="text-xs font-light tracking-wide text-foreground/40 transition-colors hover:text-foreground/80"
-            >
-              Sign out
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => navigate("/my-quotes")}
+                className="text-xs font-light tracking-wide text-foreground/60 transition-colors hover:text-foreground"
+              >
+                My quotes
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                }}
+                className="text-xs font-light tracking-wide text-foreground/40 transition-colors hover:text-foreground/80"
+              >
+                Sign out
+              </button>
+            </div>
           ) : (
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>

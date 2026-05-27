@@ -15,9 +15,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { FileDropzone } from "./FileDropzone";
 import { ToothSelector } from "./ToothSelector";
 import { isImplantService, isPerToothService } from "@/lib/caseRequirements";
-import type { Service } from "@/data/services";
+import { PLATFORM_FEE_RATE, type Service } from "@/data/services";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
-type TechnicianLite = { name: string; city: string };
+type TechnicianLite = { name: string; city: string; slug: string };
 export type CartItem = { service: Service; quantity: number };
 
 type Props = {
@@ -109,6 +111,8 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
 export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmitted }: Props) => {
   const [cases, setCases] = useState<CaseFormData[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const { user } = useAuth();
   const today = new Date().toLocaleDateString("en-US");
 
   useEffect(() => {
@@ -123,13 +127,46 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
   const allValid = totalCases > 0 && completedCount === totalCases;
   const active = cases[activeIdx];
 
+  const pricing = useMemo(() => {
+    const items = cart.map((i) => ({
+      service_slug: i.service.slug,
+      service_name: i.service.name,
+      quantity: i.quantity,
+      unit_price: i.service.price_per_unit,
+    }));
+    const subtotal = items.reduce((s, i) => s + i.unit_price * i.quantity, 0);
+    const platform_fee = +(subtotal * PLATFORM_FEE_RATE).toFixed(2);
+    const total = +(subtotal + platform_fee).toFixed(2);
+    return { items, subtotal: +subtotal.toFixed(2), platform_fee, total };
+  }, [cart]);
+
   const updateActive = (patch: Partial<CaseFormData>) => {
     setCases((prev) => prev.map((c, i) => (i === activeIdx ? { ...c, ...patch } : c)));
   };
 
-  const handleSubmit = () => {
-    if (!allValid) return;
-    toast.success(`${totalCases} case${totalCases === 1 ? "" : "s"} submitted (demo)`);
+  const handleSubmit = async () => {
+    if (!allValid || submitting) return;
+    if (!user) {
+      toast.error("Please sign in to send a quote.");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("quotes").insert({
+      dentist_id: user.id,
+      technician_slug: technician.slug,
+      items: pricing.items,
+      subtotal: pricing.subtotal,
+      platform_fee: pricing.platform_fee,
+      total: pricing.total,
+      status: "pending",
+      notes: cases.map((c) => c.notes).filter(Boolean).join("\n\n") || null,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Quote sent. Technician will respond within 24h");
     onSubmitted?.();
     onOpenChange(false);
   };
@@ -345,6 +382,27 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
             </div>
           </div>
 
+          <div className="border-t border-border bg-muted/20 px-6 py-3">
+            <div className="flex flex-wrap items-center justify-end gap-6 text-sm font-light">
+              <span className="text-foreground/60">
+                Subtotal{" "}
+                <span className="tabular-nums text-foreground">
+                  ${pricing.subtotal.toFixed(2)}
+                </span>
+              </span>
+              <span className="text-foreground/60">
+                Platform fee (10%){" "}
+                <span className="tabular-nums text-foreground">
+                  ${pricing.platform_fee.toFixed(2)}
+                </span>
+              </span>
+              <span className="font-normal">
+                Total{" "}
+                <span className="tabular-nums">${pricing.total.toFixed(2)}</span>
+              </span>
+            </div>
+          </div>
+
           <DialogFooter className="gap-2 border-t border-border px-6 py-4 sm:gap-2">
             <div className="mr-auto flex items-center gap-3 text-xs font-light text-foreground/60">
               {activeIdx > 0 && (
@@ -369,8 +427,8 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={!allValid}>
-              Submit {totalCases} case{totalCases === 1 ? "" : "s"}
+            <Button onClick={handleSubmit} disabled={!allValid || submitting}>
+              {submitting ? "Sending…" : `Confirm & send · $${pricing.total.toFixed(2)}`}
             </Button>
           </DialogFooter>
         </div>

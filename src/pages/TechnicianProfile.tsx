@@ -176,7 +176,7 @@ const TechnicianProfile = () => {
         open={checkoutOpen}
         onOpenChange={setCheckoutOpen}
         cart={cart}
-        technician={{ name: technician.name, city: technician.city }}
+        technician={{ name: technician.name, city: technician.city, slug: technician.slug }}
         onSubmitted={() => setCart([])}
       />
 
