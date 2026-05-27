@@ -94,9 +94,69 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          comment: string
+          communication_rating: number
+          created_at: string
+          delivery_rating: number
+          dentist_id: string
+          dentist_name: string
+          id: string
+          quality_rating: number
+          quote_id: string
+          rating: number
+          technician_slug: string
+        }
+        Insert: {
+          comment?: string
+          communication_rating: number
+          created_at?: string
+          delivery_rating: number
+          dentist_id: string
+          dentist_name?: string
+          id?: string
+          quality_rating: number
+          quote_id: string
+          rating: number
+          technician_slug: string
+        }
+        Update: {
+          comment?: string
+          communication_rating?: number
+          created_at?: string
+          delivery_rating?: number
+          dentist_id?: string
+          dentist_name?: string
+          id?: string
+          quality_rating?: number
+          quote_id?: string
+          rating?: number
+          technician_slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: true
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      technician_ratings: {
+        Row: {
+          avg_communication: number | null
+          avg_delivery: number | null
+          avg_quality: number | null
+          avg_rating: number | null
+          review_count: number | null
+          technician_slug: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
