@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft, MessageCircle } from "lucide-react";
+import { ArrowLeft, MessageCircle, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import QuoteChat from "@/components/chat/QuoteChat";
+import ReviewForm from "@/components/reviews/ReviewForm";
 
 type QuoteItem = {
   service_slug: string;
@@ -49,23 +50,39 @@ const MyQuotes = () => {
   const [filter, setFilter] = useState<Quote["status"] | "all">("all");
   const [fetching, setFetching] = useState(true);
   const [openChat, setOpenChat] = useState<Quote | null>(null);
+  const [reviewedQuoteIds, setReviewedQuoteIds] = useState<Set<string>>(new Set());
+  const [reviewQuote, setReviewQuote] = useState<Quote | null>(null);
 
   useEffect(() => {
     document.title = "My quotes";
   }, []);
 
-  useEffect(() => {
+  const loadAll = () => {
     if (!session) return;
     setFetching(true);
-    supabase
-      .from("quotes")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (!error && data) setQuotes(data as unknown as Quote[]);
-        setFetching(false);
-      });
+    Promise.all([
+      supabase.from("quotes").select("*").order("created_at", { ascending: false }),
+      supabase.from("reviews").select("quote_id"),
+    ]).then(([q, r]) => {
+      if (q.data) setQuotes(q.data as unknown as Quote[]);
+      if (r.data) setReviewedQuoteIds(new Set(r.data.map((x: { quote_id: string }) => x.quote_id)));
+      setFetching(false);
+    });
+  };
+
+  useEffect(() => {
+    loadAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
+
+  // Auto-open review form for first completed quote without a review
+  useEffect(() => {
+    if (fetching || reviewQuote) return;
+    const pending = quotes.find(
+      (q) => q.status === "completed" && !reviewedQuoteIds.has(q.id),
+    );
+    if (pending) setReviewQuote(pending);
+  }, [fetching, quotes, reviewedQuoteIds, reviewQuote]);
 
   if (!loading && !session) return <Navigate to="/" replace />;
 
