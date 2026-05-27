@@ -163,13 +163,24 @@ const MyQuotes = () => {
                 </ul>
 
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 text-sm font-light">
-                  <button
-                    type="button"
-                    onClick={() => setOpenChat(q)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-light uppercase tracking-wider text-foreground/70 transition-colors hover:border-foreground hover:text-foreground"
-                  >
-                    <MessageCircle className="h-3.5 w-3.5" /> Open chat
-                  </button>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setOpenChat(q)}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-light uppercase tracking-wider text-foreground/70 transition-colors hover:border-foreground hover:text-foreground"
+                    >
+                      <MessageCircle className="h-3.5 w-3.5" /> Open chat
+                    </button>
+                    {q.status === "completed" && !reviewedQuoteIds.has(q.id) && (
+                      <button
+                        type="button"
+                        onClick={() => setReviewQuote(q)}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-foreground bg-foreground px-3 py-1.5 text-xs font-light uppercase tracking-wider text-background transition-opacity hover:opacity-90"
+                      >
+                        <Star className="h-3.5 w-3.5" /> Leave review
+                      </button>
+                    )}
+                  </div>
                   <div className="flex gap-6">
                     <div className="text-foreground/60">
                       Subtotal{" "}
@@ -206,6 +217,20 @@ const MyQuotes = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {reviewQuote && (
+        <ReviewForm
+          open={!!reviewQuote}
+          onOpenChange={(o) => !o && setReviewQuote(null)}
+          quoteId={reviewQuote.id}
+          technicianSlug={reviewQuote.technician_slug}
+          technicianName={reviewQuote.technician_slug}
+          onSubmitted={() => {
+            setReviewedQuoteIds((prev) => new Set(prev).add(reviewQuote.id));
+            setReviewQuote(null);
+          }}
+        />
+      )}
     </main>
   );
 };
