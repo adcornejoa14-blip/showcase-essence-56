@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      messages: {
+        Row: {
+          attachments: Json | null
+          content: string
+          created_at: string
+          id: string
+          quote_id: string
+          read: boolean
+          sender_id: string
+          sender_role: string
+        }
+        Insert: {
+          attachments?: Json | null
+          content?: string
+          created_at?: string
+          id?: string
+          quote_id: string
+          read?: boolean
+          sender_id: string
+          sender_role: string
+        }
+        Update: {
+          attachments?: Json | null
+          content?: string
+          created_at?: string
+          id?: string
+          quote_id?: string
+          read?: boolean
+          sender_id?: string
+          sender_role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quotes: {
         Row: {
           created_at: string

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import QuoteChat from "@/components/chat/QuoteChat";
 
 type QuoteItem = {
   service_slug: string;
@@ -46,6 +48,7 @@ const MyQuotes = () => {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [filter, setFilter] = useState<Quote["status"] | "all">("all");
   const [fetching, setFetching] = useState(true);
+  const [openChat, setOpenChat] = useState<Quote | null>(null);
 
   useEffect(() => {
     document.title = "My quotes";
@@ -142,22 +145,31 @@ const MyQuotes = () => {
                   ))}
                 </ul>
 
-                <div className="mt-4 flex justify-end gap-6 border-t border-border pt-3 text-sm font-light">
-                  <div className="text-foreground/60">
-                    Subtotal{" "}
-                    <span className="tabular-nums text-foreground">
-                      ${Number(q.subtotal).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="text-foreground/60">
-                    Fee{" "}
-                    <span className="tabular-nums text-foreground">
-                      ${Number(q.platform_fee).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="font-normal">
-                    Total{" "}
-                    <span className="tabular-nums">${Number(q.total).toFixed(2)}</span>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 text-sm font-light">
+                  <button
+                    type="button"
+                    onClick={() => setOpenChat(q)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-light uppercase tracking-wider text-foreground/70 transition-colors hover:border-foreground hover:text-foreground"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" /> Open chat
+                  </button>
+                  <div className="flex gap-6">
+                    <div className="text-foreground/60">
+                      Subtotal{" "}
+                      <span className="tabular-nums text-foreground">
+                        ${Number(q.subtotal).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="text-foreground/60">
+                      Fee{" "}
+                      <span className="tabular-nums text-foreground">
+                        ${Number(q.platform_fee).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="font-normal">
+                      Total{" "}
+                      <span className="tabular-nums">${Number(q.total).toFixed(2)}</span>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -165,6 +177,18 @@ const MyQuotes = () => {
           )}
         </div>
       </div>
+
+      <Dialog open={!!openChat} onOpenChange={(o) => !o && setOpenChat(null)}>
+        <DialogContent className="h-[100dvh] w-screen max-w-none gap-0 rounded-none border-0 p-0 sm:h-[85vh] sm:max-w-2xl sm:rounded-2xl">
+          {openChat && (
+            <QuoteChat
+              quoteId={openChat.id}
+              technicianSlug={openChat.technician_slug}
+              onClose={() => setOpenChat(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </main>
   );
 };
