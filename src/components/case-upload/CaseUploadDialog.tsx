@@ -382,6 +382,27 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
             </div>
           </div>
 
+          <div className="border-t border-border bg-muted/20 px-6 py-3">
+            <div className="flex flex-wrap items-center justify-end gap-6 text-sm font-light">
+              <span className="text-foreground/60">
+                Subtotal{" "}
+                <span className="tabular-nums text-foreground">
+                  ${pricing.subtotal.toFixed(2)}
+                </span>
+              </span>
+              <span className="text-foreground/60">
+                Platform fee (10%){" "}
+                <span className="tabular-nums text-foreground">
+                  ${pricing.platform_fee.toFixed(2)}
+                </span>
+              </span>
+              <span className="font-normal">
+                Total{" "}
+                <span className="tabular-nums">${pricing.total.toFixed(2)}</span>
+              </span>
+            </div>
+          </div>
+
           <DialogFooter className="gap-2 border-t border-border px-6 py-4 sm:gap-2">
             <div className="mr-auto flex items-center gap-3 text-xs font-light text-foreground/60">
               {activeIdx > 0 && (
@@ -406,8 +427,8 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={!allValid}>
-              Submit {totalCases} case{totalCases === 1 ? "" : "s"}
+            <Button onClick={handleSubmit} disabled={!allValid || submitting}>
+              {submitting ? "Sending…" : `Confirm & send · $${pricing.total.toFixed(2)}`}
             </Button>
           </DialogFooter>
         </div>
