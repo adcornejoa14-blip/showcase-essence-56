@@ -15,7 +15,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { FileDropzone } from "./FileDropzone";
 import { ToothSelector } from "./ToothSelector";
 import { isImplantService, isPerToothService } from "@/lib/caseRequirements";
-import type { Service } from "@/data/services";
+import { PLATFORM_FEE_RATE, type Service } from "@/data/services";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 type TechnicianLite = { name: string; city: string };
 export type CartItem = { service: Service; quantity: number };
