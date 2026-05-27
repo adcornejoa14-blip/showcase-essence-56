@@ -111,6 +111,8 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
 export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmitted }: Props) => {
   const [cases, setCases] = useState<CaseFormData[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const { user } = useAuth();
   const today = new Date().toLocaleDateString("en-US");
 
   useEffect(() => {
@@ -125,13 +127,46 @@ export const CaseUploadDialog = ({ open, onOpenChange, cart, technician, onSubmi
   const allValid = totalCases > 0 && completedCount === totalCases;
   const active = cases[activeIdx];
 
+  const pricing = useMemo(() => {
+    const items = cart.map((i) => ({
+      service_slug: i.service.slug,
+      service_name: i.service.name,
+      quantity: i.quantity,
+      unit_price: i.service.price_per_unit,
+    }));
+    const subtotal = items.reduce((s, i) => s + i.unit_price * i.quantity, 0);
+    const platform_fee = +(subtotal * PLATFORM_FEE_RATE).toFixed(2);
+    const total = +(subtotal + platform_fee).toFixed(2);
+    return { items, subtotal: +subtotal.toFixed(2), platform_fee, total };
+  }, [cart]);
+
   const updateActive = (patch: Partial<CaseFormData>) => {
     setCases((prev) => prev.map((c, i) => (i === activeIdx ? { ...c, ...patch } : c)));
   };
 
-  const handleSubmit = () => {
-    if (!allValid) return;
-    toast.success(`${totalCases} case${totalCases === 1 ? "" : "s"} submitted (demo)`);
+  const handleSubmit = async () => {
+    if (!allValid || submitting) return;
+    if (!user) {
+      toast.error("Please sign in to send a quote.");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("quotes").insert({
+      dentist_id: user.id,
+      technician_slug: technician.slug,
+      items: pricing.items,
+      subtotal: pricing.subtotal,
+      platform_fee: pricing.platform_fee,
+      total: pricing.total,
+      status: "pending",
+      notes: cases.map((c) => c.notes).filter(Boolean).join("\n\n") || null,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Quote sent. Technician will respond within 24h");
     onSubmitted?.();
     onOpenChange(false);
   };
