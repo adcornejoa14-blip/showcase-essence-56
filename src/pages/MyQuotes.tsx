@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import QuoteChat from "@/components/chat/QuoteChat";
 
 type QuoteItem = {
   service_slug: string;
